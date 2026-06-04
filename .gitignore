@@ -1,0 +1,15 @@
+# test artifacts
+test_modelsim/work/
+test_modelsim/work_se/
+test_quartus/db/
+test_quartus/incremental_db/
+test_quartus/*.sof
+test_quartus/*.rpt
+test_ltspice/*.raw
+test_ltspice/*.log
+*.ini
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
