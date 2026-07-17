@@ -1,0 +1,6 @@
+# Quartus II Project File
+# Generated for NUEDC skill testing
+QUARTUS_VERSION = "13.1"
+DATE = "12:00:00  June 04, 2026"
+
+PROJECT_REVISION = "counter"

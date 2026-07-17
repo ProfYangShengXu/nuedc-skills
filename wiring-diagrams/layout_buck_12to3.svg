@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 520" width="560" height="520">
+  <rect width="100%" height="100%" fill="#fafafa"/>
+  <text x="280" y="20" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">PCB Layout Guide: Buck Converter</text>
+  <text x="280" y="38" text-anchor="middle" font-size="11" fill="#666">12.0V → 3.3V @ 2.0A  |  Board: 50 x 40  |  2层</text>
+  
+  <!-- Board outline -->
+  <rect x="30" y="50" width="500" height="400" rx="5" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2" stroke-dasharray="8,4"/>
+  <text x="280" y="445" text-anchor="middle" font-size="9" fill="#2e7d32">Board Outline (50 x 40)</text>
+<rect x="76.0" y="168.0" width="9.600000000000001" height="4.800000000000001" rx="2" fill="#e5393522" stroke="#e53935" stroke-width="1.5"/>
+<text x="80" y="173" text-anchor="middle" font-size="9" font-weight="bold" fill="#e53935">C1</text>
+<text x="80" y="184" text-anchor="middle" font-size="7" fill="#666">CAP_1206_10uF</text>
+<rect x="165" y="121" width="30" height="18" rx="2" fill="#1565c022" stroke="#1565c0" stroke-width="1.5"/>
+<text x="180" y="133" text-anchor="middle" font-size="9" font-weight="bold" fill="#1565c0">U1</text>
+<text x="180" y="144" text-anchor="middle" font-size="7" fill="#666">IR2104</text>
+<rect x="165" y="228" width="30" height="45" rx="2" fill="#2e7d3222" stroke="#2e7d32" stroke-width="1.5"/>
+<text x="180" y="253" text-anchor="middle" font-size="9" font-weight="bold" fill="#2e7d32">Q1</text>
+<text x="180" y="264" text-anchor="middle" font-size="7" fill="#666">IRF3205</text>
+<rect x="322.0" y="243" width="16.5" height="15" rx="2" fill="#f57f1722" stroke="#f57f17" stroke-width="1.5"/>
+<text x="330" y="253" text-anchor="middle" font-size="9" font-weight="bold" fill="#f57f17">L1</text>
+<text x="330" y="264" text-anchor="middle" font-size="7" fill="#666">CD54_10uH</text>
+<rect x="324.0" y="326.0" width="13.5" height="8.100000000000001" rx="2" fill="#7b1fa222" stroke="#7b1fa2" stroke-width="1.5"/>
+<text x="330" y="333" text-anchor="middle" font-size="9" font-weight="bold" fill="#7b1fa2">D1</text>
+<text x="330" y="344" text-anchor="middle" font-size="7" fill="#666">SS34</text>
+<rect x="426.0" y="168.0" width="9.600000000000001" height="4.800000000000001" rx="2" fill="#00897b22" stroke="#00897b" stroke-width="1.5"/>
+<text x="430" y="173" text-anchor="middle" font-size="9" font-weight="bold" fill="#00897b">C2</text>
+<text x="430" y="184" text-anchor="middle" font-size="7" fill="#666">CAP_1206_10uF</text>
+<rect x="177.0" y="369.0" width="6.0" height="3.5999999999999996" rx="2" fill="#c6282822" stroke="#c62828" stroke-width="1.5"/>
+<text x="180" y="373" text-anchor="middle" font-size="9" font-weight="bold" fill="#c62828">R1</text>
+<text x="180" y="384" text-anchor="middle" font-size="7" fill="#666">RES_0805_10k</text>
+<rect x="177.0" y="409.0" width="6.0" height="3.5999999999999996" rx="2" fill="#28359322" stroke="#283593" stroke-width="1.5"/>
+<text x="180" y="413" text-anchor="middle" font-size="9" font-weight="bold" fill="#283593">R2</text>
+<text x="180" y="424" text-anchor="middle" font-size="7" fill="#666">RES_0805_10k</text>
+<rect x="61.0" y="323" width="38.099999999999994" height="15" rx="2" fill="#558b2f22" stroke="#558b2f" stroke-width="1.5"/>
+<text x="80" y="333" text-anchor="middle" font-size="9" font-weight="bold" fill="#558b2f">J1</text>
+<text x="80" y="344" text-anchor="middle" font-size="7" fill="#666">HEADER_2x5</text>
+<rect x="461.0" y="323" width="38.099999999999994" height="15" rx="2" fill="#e6510022" stroke="#e65100" stroke-width="1.5" transform="rotate(90,480,330)"/>
+<text x="480" y="333" text-anchor="middle" font-size="9" font-weight="bold" fill="#e65100">J2</text>
+<text x="480" y="344" text-anchor="middle" font-size="7" fill="#666">HEADER_2x5</text>
+<text x="30" y="470" font-size="10" font-weight="bold" fill="#333">Guide:</text><text x="30" y="486" font-size="9" fill="#555">→ Power loop (thick traces, keep short)</text><text x="30" y="500" font-size="9" fill="#555">→ Keep control IC away from inductor magnetic field</text><text x="30" y="514" font-size="9" fill="#555">→ Place decoupling caps within 5mm of IC pins</text><text x="30" y="528" font-size="9" fill="#555">→ GND copper pour on bottom layer, vias to top GND islands</text></svg>

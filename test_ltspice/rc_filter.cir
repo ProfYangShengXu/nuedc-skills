@@ -1,0 +1,10 @@
+* RC Low-Pass Filter Test
+* fc = 1/(2*pi*R*C) = 1/(2*pi*1k*100n) = 1.59 kHz
+V1 Vin 0 SINE(0 1 1k)
+R1 Vin Vout 1k
+C1 Vout 0 100n
+.tran 5m
+.meas TRAN Vout_pp PP V(Vout)
+.meas TRAN Vin_pp  PP V(Vin)
+.meas TRAN gain    PARAM Vout_pp/Vin_pp
+.end

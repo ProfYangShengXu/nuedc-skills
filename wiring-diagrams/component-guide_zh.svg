@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 600" width="700" height="600">
+  <rect width="700" height="600" fill="#fafafa"/>
+  <text x="350" y="28" text-anchor="middle" font-size="18" font-weight="bold" fill="#333">器材选购指南</text>
+
+    <rect x="30" y="50" width="640" height="35" rx="5" fill="#1565c0"/>
+    <text x="350" y="73" text-anchor="middle" font-size="14" font-weight="bold" fill="white">入门必备器材（总预算约 ¥30-100）</text>
+    <rect x="30" y="85" width="280" height="25" rx="3" fill="#e3f2fd"/>
+    <text x="170" y="103" text-anchor="middle" font-size="11" font-weight="bold" fill="#1565c0">器材</text>
+    <rect x="310" y="85" width="360" height="25" rx="3" fill="#e3f2fd"/>
+    <text x="450" y="103" text-anchor="middle" font-size="11" font-weight="bold" fill="#1565c0">说明 / 选购建议</text>
+    <rect x="30" y="125" width="280" height="28" fill="#fff"/>
+    <text x="170" y="143" text-anchor="middle" font-size="10" fill="#333">① STM32 最小系统板</text>
+    <rect x="310" y="125" width="360" height="28" fill="#fff"/>
+    <text x="450" y="143" text-anchor="middle" font-size="9" fill="#666">¥15-25 | STM32F103C8T6 蓝色药丸板 | 推荐买带排针的</text>
+    <rect x="30" y="153" width="280" height="28" fill="#f5f5f5"/>
+    <text x="170" y="171" text-anchor="middle" font-size="10" fill="#333">② ST-Link V2 调试器</text>
+    <rect x="310" y="153" width="360" height="28" fill="#f5f5f5"/>
+    <text x="450" y="171" text-anchor="middle" font-size="9" fill="#666">¥10-20 | SWD 接口 | 注意买正版兼容版</text>
+    <rect x="30" y="181" width="280" height="28" fill="#fff"/>
+    <text x="170" y="199" text-anchor="middle" font-size="10" fill="#333">③ 杜邦线 (母对母)</text>
+    <rect x="310" y="181" width="360" height="28" fill="#fff"/>
+    <text x="450" y="199" text-anchor="middle" font-size="9" fill="#666">¥2-5  | 至少 4 根: 红/黑/黄/绿各一根</text>
+    <rect x="30" y="209" width="280" height="28" fill="#f5f5f5"/>
+    <text x="170" y="227" text-anchor="middle" font-size="10" fill="#333">④ USB 数据线</text>
+    <rect x="310" y="209" width="360" height="28" fill="#f5f5f5"/>
+    <text x="450" y="227" text-anchor="middle" font-size="9" fill="#666">¥5-10  | Micro-USB 或 Type-C | 要能传数据的</text>
+    <rect x="30" y="237" width="280" height="28" fill="#fff"/>
+    <text x="170" y="255" text-anchor="middle" font-size="10" fill="#333">⑤ 面包板 830孔</text>
+    <rect x="310" y="237" width="360" height="28" fill="#fff"/>
+    <text x="450" y="255" text-anchor="middle" font-size="9" fill="#666">¥5-10  | 可选，做复杂电路时用</text>
+    <rect x="30" y="265" width="280" height="28" fill="#f5f5f5"/>
+    <text x="170" y="283" text-anchor="middle" font-size="10" fill="#333">⑥ LED + 电阻套装</text>
+    <rect x="310" y="265" width="360" height="28" fill="#f5f5f5"/>
+    <text x="450" y="283" text-anchor="middle" font-size="9" fill="#666">¥2-5   | 5mm LED × 若干 + 220Ω/1kΩ 电阻</text>
+    <rect x="30" y="293" width="280" height="28" fill="#fff"/>
+    <text x="170" y="311" text-anchor="middle" font-size="10" fill="#333">⑦ 跳线 (公对公)</text>
+    <rect x="310" y="293" width="360" height="28" fill="#fff"/>
+    <text x="450" y="311" text-anchor="middle" font-size="9" fill="#666">¥3-5   | 面包板使用时需要</text>
+    <rect x="30" y="331" width="640" height="30" rx="5" fill="#e8f5e9"/>
+    <text x="350" y="351" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">🔑 核心装备只需前三样: 开发板 + 调试器 + 杜邦线 = ¥27-50</text>
+    <rect x="30" y="381" width="640" height="162" rx="8" fill="#fff3e0" stroke="#ff9800" stroke-width="1.5"/>
+    <text x="50" y="403" font-size="13" font-weight="bold" fill="#e65100">💡 选购小贴士</text>
+    <text x="50" y="426" font-size="10" fill="#795548">▸ 初学者首选 STM32F103C8T6（资料最多，教程最丰富）</text>
+    <text x="50" y="448" font-size="10" fill="#795548">▸ ST-Link V2 建议买带防反接保护版本</text>
+    <text x="50" y="470" font-size="10" fill="#795548">▸ 杜邦线买 20cm 长的更好操作</text>
+    <text x="50" y="492" font-size="10" fill="#795548">▸ 初次玩可以先买最小系统板 + ST-Link 套餐</text>
+    <text x="50" y="514" font-size="10" fill="#795548">▸ 别买太便宜的 ST-Link（容易掉固件）</text>
+    <text x="50" y="536" font-size="10" fill="#795548">▸ 面包板买带电源轨道的更方便</text>
+    <rect x="30" y="553" width="640" height="45" rx="8" fill="#ffebee" stroke="#c62828" stroke-width="1.5"/>
+    <text x="50" y="573" font-size="12" font-weight="bold" fill="#c62828">⚠️ 千万别买错</text>
+    <text x="50" y="591" font-size="10" fill="#c62828">x STM32 要买 ARM Cortex-M 系列 | x 杜邦线买母对母（不是公对公）</text></svg>

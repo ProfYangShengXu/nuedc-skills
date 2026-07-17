@@ -9,6 +9,14 @@ test_ltspice/*.raw
 test_ltspice/*.log
 *.ini
 
+# Python
+__pycache__/
+*.pyc
+
+# Runtime artifacts
+.reasonix/truncated-results/
+transcript
+
 # OS
 Thumbs.db
 Desktop.ini

@@ -1,0 +1,23 @@
+# ====================================================
+#  counter.qsf — Quartus Settings File
+#  Device: Cyclone IV EP4CE6E22C8
+#  All pins auto-assigned by Fitter
+# ====================================================
+
+# Project settings
+set_global_assignment -name FAMILY "Cyclone IV E"
+set_global_assignment -name DEVICE EP4CE6E22C8
+set_global_assignment -name TOP_LEVEL_ENTITY counter
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 13.1
+set_global_assignment -name LAST_QUARTUS_VERSION 13.1
+
+# Source files
+set_global_assignment -name VERILOG_FILE ../test_modelsim/src/counter.v
+
+# Timing constraints (50MHz clock)
+set_global_assignment -name SDC_FILE counter.sdc
+
+# Unused pins: as input tri-stated
+set_global_assignment -name RESERVE_ALL_UNUSED_PINS "AS INPUT TRI-STATED"
+
+set_global_assignment -name RESERVE_ALL_UNUSED_PINS_NO_OUTPUT_GND "AS INPUT TRI-STATED"

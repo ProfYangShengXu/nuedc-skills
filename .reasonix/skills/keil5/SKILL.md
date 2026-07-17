@@ -689,7 +689,7 @@ Agent → `run_skill("keil5", arguments="编译 C:\project\test.uvprojx")`
 
 ---
 
-## 🖨️ 十、PCB 设计 — 原理图 → 打样全流程
+## 🖨️ 九、PCB 设计 — 原理图 → 打样全流程
 
 > 从赛题指标到 Gerber 文件，agent 帮你一步到位。
 > 配合 `nuedc-pcb-gen.py` + `nuedc-pcb-svg.py` 自动生成原理图、网表、BOM、布局指导、下单参数。
@@ -791,7 +791,7 @@ p = calc_boost(5, 12, 1, 400000)
 
 ---
 
-## 📚 九、参考资源
+## 📚 十、参考资源
 
 | 资源 | 链接 |
 |------|------|
