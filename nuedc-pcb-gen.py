@@ -40,13 +40,7 @@ nuedc-pcb-gen.py — 全国大学生电子设计竞赛 PCB 全流程辅助工具
 """
 
 import sys
-import os
-import json
 import math
-import csv
-from pathlib import Path
-from dataclasses import dataclass, field
-from typing import Optional, List
 
 # ═════════════════════════════════════════════════
 # 1. 电路元件数据库 (立创商城料号)
@@ -137,7 +131,11 @@ def main():
         print("Shortcuts: buck, boost, opamp, --list-templates")
         return
     cmd = sys.argv[1]
-    vin, vout, iout, fsw = 12, 3.3, 2, 500000
+    # ── 默认参数 ──
+    DEFAULT_VIN, DEFAULT_VOUT = 12.0, 3.3
+    DEFAULT_IOUT, DEFAULT_FSW = 2.0, 500000
+    DEFAULT_R1, DEFAULT_RF = 10000, 100000
+    vin, vout, iout, fsw = DEFAULT_VIN, DEFAULT_VOUT, DEFAULT_IOUT, DEFAULT_FSW
     for i, a in enumerate(sys.argv):
         if a == "--vin" and i+1 < len(sys.argv): vin = float(sys.argv[i+1])
         if a == "--vout" and i+1 < len(sys.argv): vout = float(sys.argv[i+1])
@@ -154,7 +152,7 @@ def main():
         print(f"Boost {int(vin)}V -> {vout}V @ {iout}A ({fsw//1000}kHz)")
         for k, v in r.items(): print(f"  {k:15s}: {v}")
     elif cmd == "opamp":
-        r1, rf = 10000, 100000
+        r1, rf = DEFAULT_R1, DEFAULT_RF
         for i, a in enumerate(sys.argv):
             if a == "--r1" and i+1 < len(sys.argv): r1 = float(sys.argv[i+1])
             if a == "--rf" and i+1 < len(sys.argv): rf = float(sys.argv[i+1])

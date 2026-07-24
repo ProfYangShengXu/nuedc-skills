@@ -34,6 +34,7 @@ import sys
 import re
 import json
 import os
+import time
 from pathlib import Path
 from datetime import datetime
 from collections import Counter, defaultdict
@@ -410,10 +411,8 @@ def watch_log(path):
                     if 'error' in line.lower() and ('error:' in line.lower() or 'Error:' in line):
                         print(f"  [{datetime.now().strftime('%H:%M:%S')}] {line.rstrip()}")
                 
-                import time
                 time.sleep(0.5)
             except FileNotFoundError:
-                import time
                 time.sleep(1)
     except KeyboardInterrupt:
         print("\n\nFinal Report:")

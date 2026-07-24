@@ -126,8 +126,12 @@ def gen_buck_schematic(vin, vout, iout, fsw, output_path):
         y += 16
     
     svg += svg_footer()
-    with open(output_path, 'w', encoding='utf-8') as f:
-        f.write(svg)
+    try:
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(svg)
+    except OSError as e:
+        print(f"[!] 写入失败 {output_path}: {e}")
+        return None
     return output_path
 
 
@@ -158,8 +162,12 @@ def gen_boost_schematic(vin, vout, iout, fsw, output_path):
     svg += gnd_sym(300, 350)
     
     svg += svg_footer()
-    with open(output_path, 'w', encoding='utf-8') as f:
-        f.write(svg)
+    try:
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(svg)
+    except OSError as e:
+        print(f"[!] 写入失败 {output_path}: {e}")
+        return None
     return output_path
 
 
