@@ -42,6 +42,9 @@ nuedc-pcb-gen.py — 全国大学生电子设计竞赛 PCB 全流程辅助工具
 import sys
 import math
 
+# dB 换算常数: dB = 20 * log10(ratio)
+DB_SCALE = 20
+
 # ═════════════════════════════════════════════════
 # 1. 电路元件数据库 (立创商城料号)
 # ═════════════════════════════════════════════════
@@ -157,7 +160,7 @@ def main():
             if a == "--r1" and i+1 < len(sys.argv): r1 = float(sys.argv[i+1])
             if a == "--rf" and i+1 < len(sys.argv): rf = float(sys.argv[i+1])
         gain = calc_opamp_gain(r1, rf)
-        print(f"Op-Amp: R1={r1/1000:.0f}k Rf={rf/1000:.0f}k Gain={gain:.1f} ({20*math.log10(gain):.1f}dB)")
+        print(f"Op-Amp: R1={r1/1000:.0f}k Rf={rf/1000:.0f}k Gain={gain:.1f} ({DB_SCALE*math.log10(gain):.1f}dB)")
     elif cmd == "--list-templates":
         print("Templates: buck, boost, ldo, opamp, hbridge, cc_source, active_filter, motor_driver")
     else:

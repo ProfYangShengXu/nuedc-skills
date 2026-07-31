@@ -36,7 +36,6 @@ keil-wiring-diagram.py — 动态 Keil 硬件接线图生成器
 """
 
 import sys
-import os
 import re
 import xml.etree.ElementTree as ET
 from pathlib import Path

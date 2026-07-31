@@ -2,7 +2,12 @@
 SVG_W, SVG_H = 1000, 700
 
 def svg_header(title):
-    return '<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d">\n<rect width="%d" height="%d" fill="#fafafa"/>\n<text x="%d" y="30" text-anchor="middle" font-size="18" font-weight="bold" fill="#333">%s</text>\n' % (SVG_W, SVG_H, SVG_W, SVG_H, SVG_W, SVG_H, SVG_W//2, title)
+    xml_decl = '<?xml version="1.0" encoding="UTF-8"?>'
+    svg_open = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d">'
+    bg_rect = '<rect width="%d" height="%d" fill="#fafafa"/>'
+    title_text = '<text x="%d" y="30" text-anchor="middle" font-size="18" font-weight="bold" fill="#333">%s</text>\n'
+    return (xml_decl + '\n' + svg_open + '\n' + bg_rect + '\n' + title_text) % (
+        SVG_W, SVG_H, SVG_W, SVG_H, SVG_W, SVG_H, SVG_W // 2, title)
 
 def svg_footer():
     return '</svg>'

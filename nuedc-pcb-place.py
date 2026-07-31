@@ -70,8 +70,12 @@ def gen_layout_svg(topo, out_path):
     svg.append('<text x="30" y="500" font-size="9" fill="#555">Keep inductor away from control IC</text>')
     svg.append('<text x="30" y="514" font-size="9" fill="#555">Decoupling caps within 5mm of IC</text>')
     svg.append('</svg>')
-    with open(out_path, 'w', encoding='utf-8') as f:
-        f.write('\n'.join(svg))
+    try:
+        with open(out_path, 'w', encoding='utf-8') as f:
+            f.write('\n'.join(svg))
+    except OSError as e:
+        print(f"[!] 写入 SVG 失败 {out_path}: {e}")
+        return None
     return out_path
 
 def gen_kicad_script(topo, out_path):
@@ -108,8 +112,12 @@ def gen_kicad_script(topo, out_path):
         'b.Save("auto_placed.kicad_pcb")',
         'print("[OK] Saved. Open in KiCad PCB Editor -> Route -> Auto-route")',
     ])
-    with open(out_path, 'w', encoding='utf-8') as f:
-        f.write('\n'.join(lines) + '\n')
+    try:
+        with open(out_path, 'w', encoding='utf-8') as f:
+            f.write('\n'.join(lines) + '\n')
+    except OSError as e:
+        print(f"[!] 写入 KiCad 脚本失败 {out_path}: {e}")
+        return None
     return out_path
 
 if __name__ == "__main__":

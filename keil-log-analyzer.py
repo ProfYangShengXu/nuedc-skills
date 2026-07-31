@@ -33,7 +33,6 @@ keil-log-analyzer.py — Keil UV4 编译日志自动化解析工具
 import sys
 import re
 import json
-import os
 import time
 from pathlib import Path
 from datetime import datetime
@@ -408,7 +407,7 @@ def watch_log(path):
                 for line in new_lines:
                     log.parse_line(line)
                     # Print real-time errors
-                    if 'error' in line.lower() and ('error:' in line.lower() or 'Error:' in line):
+                    if 'error:' in line.lower():
                         print(f"  [{datetime.now().strftime('%H:%M:%S')}] {line.rstrip()}")
                 
                 time.sleep(0.5)
