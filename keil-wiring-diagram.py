@@ -35,11 +35,10 @@ keil-wiring-diagram.py — 动态 Keil 硬件接线图生成器
     python keil-wiring-diagram.py --all
 """
 
-import sys
 import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 # ═══════════════════════════════════════════════
@@ -346,8 +345,6 @@ T = {
 # ═══════════════════════════════════════════════
 # 3. SVG 基础组件
 # ═══════════════════════════════════════════════
-
-COMPONENTS = []  # 器材列表
 
 def svg_header(title, w, h, lang="zh"):
     return f'''<?xml version="1.0" encoding="UTF-8"?>
@@ -750,7 +747,11 @@ def generate_wiring_diagram(mcu_model: str, peripherals_str: str = "",
     
     # 写文件
     if output_path:
-        Path(output_path).write_text(svg, encoding="utf-8")
+        try:
+            Path(output_path).write_text(svg, encoding="utf-8")
+        except OSError as e:
+            print(f"[!] 写入失败 {output_path}: {e}")
+            return ""
         print(f"[✓] 已生成: {output_path}  ({len(svg)//1024} KB)")
     else:
         out_dir = Path(__file__).parent / "wiring-diagrams"
@@ -768,7 +769,11 @@ def generate_wiring_diagram(mcu_model: str, peripherals_str: str = "",
         fname += ".svg"
         
         path = out_dir / fname
-        path.write_text(svg, encoding="utf-8")
+        try:
+            path.write_text(svg, encoding="utf-8")
+        except OSError as e:
+            print(f"[!] 写入失败 {path}: {e}")
+            return ""
         print(f"[✓] 已生成: {path}  ({len(svg)//1024} KB)")
     
     return svg
@@ -854,13 +859,21 @@ def generate_component_guide(lang="zh", output_path=None):
     svg += svg_footer()
     
     if output_path:
-        Path(output_path).write_text(svg, encoding="utf-8")
+        try:
+            Path(output_path).write_text(svg, encoding="utf-8")
+        except OSError as e:
+            print(f"[!] 写入失败 {output_path}: {e}")
+            return ""
         print(f"[✓] 已生成: {output_path}")
     else:
         out_dir = Path(__file__).parent / "wiring-diagrams"
         out_dir.mkdir(exist_ok=True)
         path = out_dir / f"component-guide_{lang}.svg"
-        path.write_text(svg, encoding="utf-8")
+        try:
+            path.write_text(svg, encoding="utf-8")
+        except OSError as e:
+            print(f"[!] 写入失败 {path}: {e}")
+            return ""
         print(f"[✓] 已生成: {path}")
     
     return svg

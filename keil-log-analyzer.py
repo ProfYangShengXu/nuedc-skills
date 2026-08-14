@@ -34,7 +34,6 @@ import sys
 import re
 import json
 import time
-from pathlib import Path
 from datetime import datetime
 from collections import Counter, defaultdict
 
@@ -216,9 +215,13 @@ class BuildLog:
 
     def parse_file(self, path):
         """从文件解析"""
-        with open(path, 'r', encoding='utf-8', errors='replace') as f:
-            for i, line in enumerate(f, 1):
-                self.parse_line(line, i)
+        try:
+            with open(path, 'r', encoding='utf-8', errors='replace') as f:
+                for i, line in enumerate(f, 1):
+                    self.parse_line(line, i)
+        except OSError as e:
+            print(f"[!] 无法读取日志文件 {path}: {e}")
+            sys.exit(1)
         return self
     
     def parse_text(self, text):

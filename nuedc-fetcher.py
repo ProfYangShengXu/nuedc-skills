@@ -16,7 +16,6 @@
 
 import sys
 import json
-import re
 from typing import Optional
 
 # ═══════════════════════════════════════════════
@@ -122,6 +121,8 @@ def export_problem_template(problem_id: str) -> str:
         return f"未找到赛题: {problem_id}"
     
     parts = problem_id.split("-")
+    if len(parts) < 2:
+        return f"赛题编号格式无效: {problem_id} (应为 年份-题号, 如 2025-A)"
     year, letter = parts[0], parts[1]
     
     template = f"""
