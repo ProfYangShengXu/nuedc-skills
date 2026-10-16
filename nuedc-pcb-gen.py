@@ -20,23 +20,8 @@ nuedc-pcb-gen.py — 全国大学生电子设计竞赛 PCB 全流程辅助工具
     # 生成 Boost 升压电路
     python nuedc-pcb-gen.py boost --vin 5 --vout 12 --iout 1
 
-    # 生成 LDO 线性稳压
-    python nuedc-pcb-gen.py ldo --vin 5 --vout 3.3 --iout 0.5
-
-    # 生成运放电路 (同相放大)
-    python nuedc-pcb-gen.py opamp --type non-inverting --gain 10
-
-    # 生成 H 桥电机驱动
-    python nuedc-pcb-gen.py hbridge --vbus 12 --imax 2
-
-    # 生成完整赛题 PCB 方案
-    python nuedc-pcb-gen.py --project 2025-A
-    
-    # 输出到指定目录
-    python nuedc-pcb-gen.py buck --vin 12 --vout 5 --iout 3 -o output/buck_12to5
-
-    # 列出所有已生成文件
-    python nuedc-pcb-gen.py --list-outputs
+    # 运放增益计算 (同相放大)
+    python nuedc-pcb-gen.py opamp --r1 10000 --rf 100000
 """
 
 import sys
@@ -127,6 +112,14 @@ def calc_opamp_gain(r1, rf):
     return 1 + rf / r1
 
 
+# 已实现的计算/生成器: 模板名 -> 说明
+IMPLEMENTED_TEMPLATES = {
+    "buck": "降压变换器参数计算",
+    "boost": "升压变换器参数计算",
+    "opamp": "同相放大增益计算",
+}
+
+
 def main():
     """CLI 入口"""
     if "--help" in sys.argv or "-h" in sys.argv or len(sys.argv) < 2:
@@ -147,10 +140,22 @@ def main():
             v = sys.argv[i+1].lower().replace('k','000').replace('m','000000')
             fsw = int(float(v))
     if cmd == "buck":
+        if vin <= 0 or vout <= 0 or iout <= 0 or fsw <= 0:
+            print("[!] 参数必须为正数 (--vin/--vout/--iout/--fsw)")
+            return
+        if vout >= vin:
+            print(f"[!] Buck 需满足 vout < vin (当前 {vout}V >= {vin}V)，请用 boost")
+            return
         r = calc_buck(vin, vout, iout, fsw)
         print(f"Buck {int(vin)}V -> {vout}V @ {iout}A ({fsw//1000}kHz)")
         for k, v in r.items(): print(f"  {k:15s}: {v}")
     elif cmd == "boost":
+        if vin <= 0 or vout <= 0 or iout <= 0 or fsw <= 0:
+            print("[!] 参数必须为正数 (--vin/--vout/--iout/--fsw)")
+            return
+        if vout <= vin:
+            print(f"[!] Boost 需满足 vout > vin (当前 {vout}V <= {vin}V)，请用 buck")
+            return
         r = calc_boost(vin, vout, iout, fsw)
         print(f"Boost {int(vin)}V -> {vout}V @ {iout}A ({fsw//1000}kHz)")
         for k, v in r.items(): print(f"  {k:15s}: {v}")
@@ -159,12 +164,19 @@ def main():
         for i, a in enumerate(sys.argv):
             if a == "--r1" and i+1 < len(sys.argv): r1 = float(sys.argv[i+1])
             if a == "--rf" and i+1 < len(sys.argv): rf = float(sys.argv[i+1])
+        if r1 <= 0 or rf < 0:
+            print("[!] 电阻必须为正数 (--r1/--rf)")
+            return
         gain = calc_opamp_gain(r1, rf)
-        print(f"Op-Amp: R1={r1/1000:.0f}k Rf={rf/1000:.0f}k Gain={gain:.1f} ({DB_SCALE*math.log10(gain):.1f}dB)")
+        print(f"Op-Amp: R1={r1/1000:.0f}k Rf={rf/1000:.0f}k"
+              f" Gain={gain:.1f} ({DB_SCALE*math.log10(gain):.1f}dB)")
     elif cmd == "--list-templates":
-        print("Templates: buck, boost, ldo, opamp, hbridge, cc_source, active_filter, motor_driver")
+        print("已实现的计算模板:")
+        for name, desc in IMPLEMENTED_TEMPLATES.items():
+            print(f"  {name:12s} — {desc}")
     else:
         print(f"Unknown: {cmd}")
+        print(f"Available: {', '.join(IMPLEMENTED_TEMPLATES)}")
 
 
 if __name__ == "__main__":

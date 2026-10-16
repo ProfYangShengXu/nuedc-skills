@@ -18,6 +18,15 @@ from pathlib import Path
 
 OUT = Path("wiring-diagrams")
 
+# 布局图几何常量 (SVG 用户单位 px)
+CANVAS_W, CANVAS_H = 560, 480   # 画布尺寸
+ORIGIN_X, ORIGIN_Y = 30, 50     # 板框左上角
+BODY_W, BODY_H = 30, 20         # 元件本体宽 / 高
+
+# 元件配色轮转表
+PART_COLORS = ["#e53935", "#1565c0", "#2e7d32", "#f57f17", "#7b1fa2",
+               "#00897b", "#c62828", "#283593", "#558b2f", "#e65100"]
+
 FP = {
     "STM32F103C8T6":"Package_QFP:LQFP-48_7x7mm_P0.5mm",
     "IR2104":"Package_DIP:DIP-8_W7.62mm",
@@ -54,16 +63,23 @@ PLACEMENTS = {
 def gen_layout_svg(topo, out_path):
     p = PLACEMENTS[topo]
     BW, BH = 500, 400
-    cols = ["#e53935","#1565c0","#2e7d32","#f57f17","#7b1fa2","#00897b","#c62828","#283593","#558b2f","#e65100"]
-    svg = ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 480">']
+    cols = PART_COLORS
+    svg = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {CANVAS_W} {CANVAS_H}">']
     svg.append(f'<text x="280" y="20" text-anchor="middle" font-size="16" font-weight="bold">{p["topo"]}</text>')
     svg.append(f'<text x="280" y="38" text-anchor="middle" font-size="11" fill="#666">Board: {p["board"]}</text>')
-    svg.append(f'<rect x="30" y="50" width="{BW}" height="{BH}" rx="5" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2" stroke-dasharray="8,4"/>')
+    svg.append(
+        f'<rect x="{ORIGIN_X}" y="{ORIGIN_Y}" width="{BW}" height="{BH}" rx="5" fill="#e8f5e9"'
+        f' stroke="#2e7d32" stroke-width="2" stroke-dasharray="8,4"/>')
     for i, (ref, part, nx, ny, rot) in enumerate(p["parts"]):
-        cx, cy = 30 + int(nx * BW), 50 + int(ny * BH)
+        cx = ORIGIN_X + int(nx * BW)
+        cy = ORIGIN_Y + int(ny * BH)
         c = cols[i % len(cols)]
-        svg.append(f'<rect x="{cx-15}" y="{cy-10}" width="30" height="20" rx="2" fill="{c}33" stroke="{c}" stroke-width="1.5"/>')
-        svg.append(f'<text x="{cx}" y="{cy+4}" text-anchor="middle" font-size="9" font-weight="bold" fill="{c}">{ref}</text>')
+        svg.append(
+            f'<rect x="{cx - BODY_W // 2}" y="{cy - BODY_H // 2}" width="{BODY_W}" height="{BODY_H}"'
+            f' rx="2" fill="{c}33" stroke="{c}" stroke-width="1.5"/>')
+        svg.append(
+            f'<text x="{cx}" y="{cy+4}" text-anchor="middle" font-size="9"'
+            f' font-weight="bold" fill="{c}">{ref}</text>')
         svg.append(f'<text x="{cx}" y="{cy+14}" text-anchor="middle" font-size="7" fill="#666">{part}</text>')
     svg.append('<text x="30" y="470" font-size="10" font-weight="bold">Guide:</text>')
     svg.append('<text x="30" y="486" font-size="9" fill="#555">Power loop: thick traces, keep short</text>')
@@ -104,8 +120,12 @@ def gen_kicad_script(topo, out_path):
         fp = FP.get(part, "")
         x = f'pcbnew.FromMM({float(nx)*float(w):.1f})'
         y = f'pcbnew.FromMM({float(ny)*float(h):.1f})'
+        # rot 为 0 时省略角度设置，避免生成冗余调用
+        rot_call = f';f.SetOrientationDegrees({rot})' if rot else ''
         lines.append(f'f=pcbnew.FootprintLoad("","{fp}")')
-        lines.append(f'if f:f.SetReference("{ref}");f.SetPosition(pcbnew.VECTOR2I({x},{y}))' + (f';f.SetOrientationDegrees({rot})' if rot else '') + ';b.Add(f)')
+        lines.append(
+            f'if f:f.SetReference("{ref}");f.SetPosition(pcbnew.VECTOR2I({x},{y}))'
+            + rot_call + ';b.Add(f)')
         lines.append(f'else:print("Missing:{fp}")')
     lines.extend([
         '',

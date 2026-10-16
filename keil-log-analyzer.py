@@ -271,8 +271,10 @@ class BuildLog:
             lines.append(f"⏱  Build Time: {self.build_time}")
         if self.memory:
             m = self.memory
-            total = m['code'] + m['ro_data'] + m['rw_data'] + m['zi_data']
-            lines.append(f"💾 Flash: {m['code']+m['ro_data']} B  |  RAM: {m['rw_data']+m['zi_data']} B  |  Total: {total} B")
+            flash = m['code'] + m['ro_data']
+            ram = m['rw_data'] + m['zi_data']
+            lines.append(
+                f"💾 Flash: {flash} B  |  RAM: {ram} B  |  Total: {flash + ram} B")
         lines.append("")
         
         if not self.errors and not self.warnings:

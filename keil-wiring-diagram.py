@@ -35,7 +35,6 @@ keil-wiring-diagram.py — 动态 Keil 硬件接线图生成器
     python keil-wiring-diagram.py --all
 """
 
-import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from dataclasses import dataclass
@@ -379,7 +378,8 @@ def draw_debugger_box(x, y, name, pin_map, lang="zh"):
     <rect x="{x+15}" y="{y+35}" width="190" height="22" rx="4" fill="#ffcdd2"/>
     <text x="{x+110}" y="{y+51}" text-anchor="middle" font-size="10" fill="#c62828">{t["insert_usb"]}</text>
     <rect x="{x+30}" y="{y+65}" width="160" height="{h-80}" rx="6" fill="white" stroke="#333" stroke-width="1"/>
-    <text x="{x+110}" y="{y+82}" text-anchor="middle" font-size="10" font-weight="bold" fill="#333">{t["pin_top_view"]}</text>'''
+    <text x="{x+110}" y="{y+82}" text-anchor="middle" font-size="10" font-weight="bold"
+          fill="#333">{t["pin_top_view"]}</text>'''
     
     colors = {"SWCLK": "#4caf50", "SWDIO": "#2196f3", "GND": "#000", "3.3V": "#f44336",
               "TMS": "#2196f3", "TCK": "#4caf50", "TDI": "#9c27b0", "TDO": "#ff9800",
@@ -558,7 +558,10 @@ def draw_peripheral(svg, ptype, pin, x, y, lang="zh"):
 DEBUGGER_PINS = {
     "stlink": {"SWCLK": "SWCLK", "SWDIO": "SWDIO", "GND": "GND", "3.3V": "3.3V"},
     "jlink_swd": {"SWCLK": "SWCLK", "SWDIO": "SWDIO", "GND": "GND", "3.3V": "3.3V"},
-    "jlink_jtag": {"TMS": "TMS", "TCK": "TCK", "TDI": "TDI", "TDO": "TDO", "nTRST": "nTRST", "GND": "GND", "3.3V": "3.3V"},
+    "jlink_jtag": {
+        "TMS": "TMS", "TCK": "TCK", "TDI": "TDI", "TDO": "TDO",
+        "nTRST": "nTRST", "GND": "GND", "3.3V": "3.3V",
+    },
     "ulink": {"SWCLK": "SWCLK", "SWDIO": "SWDIO", "GND": "GND", "3.3V": "3.3V"},
 }
 
@@ -620,10 +623,14 @@ def draw_debug_wiring(svg, mcu_info, debug_mode, x, y, lang):
     wire_labels = [f"{s} ({p})" for (s, p, _) in wire_pins]
     
     svg += f'''
-    <rect x="{target_x}" y="{target_y}" width="200" height="{target_h}" rx="10" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
-    <text x="{target_x+100}" y="{target_y+25}" text-anchor="middle" font-size="14" font-weight="bold" fill="#2e7d32">{mcu_info.model}</text>
-    <text x="{target_x+100}" y="{target_y+45}" text-anchor="middle" font-size="9" fill="#555">{mcu_info.core} | {mcu_info.package}</text>
-    <text x="{target_x+100}" y="{target_y+62}" text-anchor="middle" font-size="10" font-weight="bold" fill="#333">{t["key_pins"]}</text>'''
+    <rect x="{target_x}" y="{target_y}" width="200" height="{target_h}" rx="10"
+          fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+    <text x="{target_x+100}" y="{target_y+25}" text-anchor="middle" font-size="14" font-weight="bold"
+          fill="#2e7d32">{mcu_info.model}</text>
+    <text x="{target_x+100}" y="{target_y+45}" text-anchor="middle" font-size="9"
+          fill="#555">{mcu_info.core} | {mcu_info.package}</text>
+    <text x="{target_x+100}" y="{target_y+62}" text-anchor="middle" font-size="10" font-weight="bold"
+          fill="#333">{t["key_pins"]}</text>'''
     
     for i, (sname, mpin, color) in enumerate(wire_pins):
         cy = target_y + 78 + i * 26
@@ -639,9 +646,12 @@ def draw_debug_wiring(svg, mcu_info, debug_mode, x, y, lang):
         # 根据信号的顺序决定交错路径
         offset = (i % 2) * 30
         svg += f'''
-    <line x1="{x+220}" y1="{src_y}" x2="{x+250}" y2="{src_y + offset}" stroke="{color}" stroke-width="2.5" stroke-dasharray="6,3"/>
-    <line x1="{x+250}" y1="{src_y + offset}" x2="{x+270}" y2="{dst_y}" stroke="{color}" stroke-width="2.5" stroke-dasharray="6,3"/>
-    <line x1="{x+270}" y1="{dst_y}" x2="{target_x+50}" y2="{dst_y}" stroke="{color}" stroke-width="2.5" stroke-dasharray="6,3"/>'''
+    <line x1="{x+220}" y1="{src_y}" x2="{x+250}" y2="{src_y + offset}"
+          stroke="{color}" stroke-width="2.5" stroke-dasharray="6,3"/>
+    <line x1="{x+250}" y1="{src_y + offset}" x2="{x+270}" y2="{dst_y}"
+          stroke="{color}" stroke-width="2.5" stroke-dasharray="6,3"/>
+    <line x1="{x+270}" y1="{dst_y}" x2="{target_x+50}" y2="{dst_y}"
+          stroke="{color}" stroke-width="2.5" stroke-dasharray="6,3"/>'''
     
     return svg, max(dbg_h, target_h)
 
@@ -706,7 +716,8 @@ def generate_wiring_diagram(mcu_model: str, peripherals_str: str = "",
         y_offset += 90
         svg += f'''
     <rect x="30" y="{y_offset}" width="{canvas_w-60}" height="30" rx="5" fill="#1565c0"/>
-    <text x="{canvas_w//2}" y="{y_offset+20}" text-anchor="middle" font-size="13" font-weight="bold" fill="white">{t["peripheral_list"]} ({len(periphs)})</text>'''
+    <text x="{canvas_w//2}" y="{y_offset+20}" text-anchor="middle" font-size="13" font-weight="bold"
+          fill="white">{t["peripheral_list"]} ({len(periphs)})</text>'''
         
         y_offset += 45
         per_x = 80
@@ -717,7 +728,8 @@ def generate_wiring_diagram(mcu_model: str, peripherals_str: str = "",
         # 外设总体说明
         y_offset += max(80, len(periphs) * 80) + 10
         svg += f'''
-    <rect x="30" y="{y_offset}" width="{canvas_w-60}" height="30" rx="5" fill="#e3f2fd" stroke="#1565c0" stroke-width="1"/>
+    <rect x="30" y="{y_offset}" width="{canvas_w-60}" height="30" rx="5"
+          fill="#e3f2fd" stroke="#1565c0" stroke-width="1"/>
     <text x="{canvas_w//2}" y="{y_offset+20}" text-anchor="middle" font-size="10" fill="#1565c0">
       {t["peripheral_label"]} → {t["pin_label"]} → {mcu.model}
     </text>'''
@@ -727,8 +739,10 @@ def generate_wiring_diagram(mcu_model: str, peripherals_str: str = "",
     if mcu.pinout_svg:
         y_offset += 10
         svg += f'''
-    <rect x="30" y="{y_offset}" width="{canvas_w-60}" height="170" rx="8" fill="#f9fbe7" stroke="#827717" stroke-width="1"/>
-    <text x="{canvas_w//2}" y="{y_offset+20}" text-anchor="middle" font-size="12" font-weight="bold" fill="#827717">{mcu.model} — Pinout</text>'''
+    <rect x="30" y="{y_offset}" width="{canvas_w-60}" height="170" rx="8"
+          fill="#f9fbe7" stroke="#827717" stroke-width="1"/>
+    <text x="{canvas_w//2}" y="{y_offset+20}" text-anchor="middle" font-size="12" font-weight="bold"
+          fill="#827717">{mcu.model} — Pinout</text>'''
         # 嵌入 MCU 引脚子图
         for line in mcu.pinout_svg.split('\n'):
             if '<g' in line or '<text' in line or '<rect' in line:
@@ -741,7 +755,8 @@ def generate_wiring_diagram(mcu_model: str, peripherals_str: str = "",
     
     # 底部信息
     svg += f'''
-    <text x="{canvas_w//2}" y="{canvas_h-10}" text-anchor="middle" font-size="8" fill="#999">{t["generated_by"]}</text>'''
+    <text x="{canvas_w//2}" y="{canvas_h-10}" text-anchor="middle" font-size="8"
+          fill="#999">{t["generated_by"]}</text>'''
     
     svg += svg_footer()
     
@@ -793,14 +808,17 @@ def generate_component_guide(lang="zh", output_path=None):
     # 标题栏
     svg += f'''
     <rect x="30" y="50" width="{w-60}" height="35" rx="5" fill="#1565c0"/>
-    <text x="{w//2}" y="73" text-anchor="middle" font-size="14" font-weight="bold" fill="white">{t["component_title"]}</text>'''
+    <text x="{w//2}" y="73" text-anchor="middle" font-size="14" font-weight="bold"
+          fill="white">{t["component_title"]}</text>'''
     
     # 表头
     svg += f'''
     <rect x="30" y="85" width="280" height="25" rx="3" fill="#e3f2fd"/>
-    <text x="170" y="103" text-anchor="middle" font-size="11" font-weight="bold" fill="#1565c0">{t["component_col1"]}</text>
+    <text x="170" y="103" text-anchor="middle" font-size="11" font-weight="bold"
+          fill="#1565c0">{t["component_col1"]}</text>
     <rect x="310" y="85" width="{w-340}" height="25" rx="3" fill="#e3f2fd"/>
-    <text x="{170+280}" y="103" text-anchor="middle" font-size="11" font-weight="bold" fill="#1565c0">{t["component_col2"]}</text>'''
+    <text x="{170+280}" y="103" text-anchor="middle" font-size="11" font-weight="bold"
+          fill="#1565c0">{t["component_col2"]}</text>'''
     
     if lang == "zh":
         rows = [
@@ -837,7 +855,8 @@ def generate_component_guide(lang="zh", output_path=None):
     y += 10
     svg += f'''
     <rect x="30" y="{y}" width="{w-60}" height="30" rx="5" fill="#e8f5e9"/>
-    <text x="{w//2}" y="{y+20}" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">{t["core_equipment"]}</text>'''
+    <text x="{w//2}" y="{y+20}" text-anchor="middle" font-size="11" font-weight="bold"
+          fill="#2e7d32">{t["core_equipment"]}</text>'''
     
     # 选购贴士
     y += 50
@@ -887,16 +906,17 @@ def detect_mcu_from_project(project_path: str) -> Optional[str]:
     """从 .uvprojx 文件中提取 MCU 型号"""
     try:
         tree = ET.parse(project_path)
-        root = tree.getroot()
-        # 搜索 Device 标签
-        for elem in root.iter():
-            if elem.tag == "Device" and elem.text:
-                return elem.text.strip()
-            # 搜索 TDeviceTypeName
-            if elem.tag == "TDeviceTypeName" and elem.text:
-                return elem.text.strip()
-    except Exception as e:
-        print(f"[!] 解析项目文件失败: {e}")
+    except (OSError, ET.ParseError) as e:
+        print(f"[!] 解析项目文件失败 {project_path}: {e}")
+        return None
+    root = tree.getroot()
+    # 搜索 Device 标签
+    for elem in root.iter():
+        if elem.tag == "Device" and elem.text:
+            return elem.text.strip()
+        # 搜索 TDeviceTypeName
+        if elem.tag == "TDeviceTypeName" and elem.text:
+            return elem.text.strip()
     return None
 
 

@@ -238,12 +238,15 @@ def main():
         idx = sys.argv.index("--problem") + 1
         if idx < len(sys.argv):
             pid = sys.argv[idx]
+            problem = get_problem_detail(pid)
+            if problem is None:
+                # 找不到赛题时给出明确错误，避免输出裸 null
+                print(f"未找到赛题: {pid} (可用 --list-years 查看可用年份)")
+                return
             if "--json" in sys.argv:
-                problem = get_problem_detail(pid)
                 print(json.dumps(problem, ensure_ascii=False, indent=2))
             else:
-                template = export_problem_template(pid)
-                print(template)
+                print(export_problem_template(pid))
         return
     
     if "--update-db" in sys.argv:
