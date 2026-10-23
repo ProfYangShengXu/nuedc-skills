@@ -22,6 +22,7 @@ OUT = Path("wiring-diagrams")
 CANVAS_W, CANVAS_H = 560, 480   # 画布尺寸
 ORIGIN_X, ORIGIN_Y = 30, 50     # 板框左上角
 BODY_W, BODY_H = 30, 20         # 元件本体宽 / 高
+BOARD_W, BOARD_H = 500, 400     # 板框绘制尺寸（与 CANVAS_W/H 独立）
 
 # 元件配色轮转表
 PART_COLORS = ["#e53935", "#1565c0", "#2e7d32", "#f57f17", "#7b1fa2",
@@ -62,7 +63,7 @@ PLACEMENTS = {
 
 def gen_layout_svg(topo, out_path):
     p = PLACEMENTS[topo]
-    BW, BH = 500, 400
+    BW, BH = BOARD_W, BOARD_H
     cols = PART_COLORS
     svg = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {CANVAS_W} {CANVAS_H}">']
     svg.append(f'<text x="280" y="20" text-anchor="middle" font-size="16" font-weight="bold">{p["topo"]}</text>')
@@ -149,7 +150,11 @@ if __name__ == "__main__":
     if topo not in PLACEMENTS:
         print(f"Unknown: {topo}. Options: {', '.join(PLACEMENTS.keys())}")
         sys.exit(1)
-    OUT.mkdir(exist_ok=True)
+    try:
+        OUT.mkdir(exist_ok=True)
+    except OSError as e:
+        print(f"[!] 无法创建输出目录 {OUT}: {e}")
+        sys.exit(1)
     gen_layout_svg(topo, OUT / f"layout_{topo}.svg")
     print(f"[OK] Layout SVG: wiring-diagrams/layout_{topo}.svg")
     if "--kicad-script" in sys.argv:

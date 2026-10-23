@@ -44,16 +44,9 @@ from typing import Optional
 # 1. MCU 引脚数据库
 # ═══════════════════════════════════════════════
 
-@dataclass
-class PinInfo:
-    """单个引脚信息"""
-    name: str        # 如 PA0, PB1, PC13
-    function: str    # 默认功能描述
-    x: float         # SVG 上的 X 坐标
-    y: float         # SVG 上的 Y 坐标
-    side: str = "left"   # left / right
-    swd: bool = False    # 是否 SWD 引脚
-    jtag: bool = False   # 是否 JTAG 引脚
+# 版面尺寸常量（px）
+WARNING_BOX_H = 70   # 安全警告框高度
+PINOUT_BOX_H = 170   # MCU 引脚图区高度
 
 @dataclass
 class MCUInfo:
@@ -693,7 +686,8 @@ def generate_wiring_diagram(mcu_model: str, peripherals_str: str = "",
         periph_h = 80 + (len(periphs) * 80)
     
     canvas_w = max(base_w, 800)
-    canvas_h = base_h + debug_h + periph_h
+    # 警告框固定 70 高，Pinout 区固定 170 高，此前漏算导致内容溢出画布
+    canvas_h = base_h + debug_h + periph_h + WARNING_BOX_H + PINOUT_BOX_H + 40
     
     # 标题
     title = f"{mcu.model} — {t['title_debug']}"
@@ -708,8 +702,9 @@ def generate_wiring_diagram(mcu_model: str, peripherals_str: str = "",
     
     # 2. 警告框
     y_offset += dbg_height + 20
-    svg += draw_warning_box(30, y_offset, canvas_w - 60, 70, 
+    svg += draw_warning_box(30, y_offset, canvas_w - 60, WARNING_BOX_H,
                            [t["warning_1"], t["warning_2"], t["warning_3"]], lang)
+    y_offset += WARNING_BOX_H + 20
     
     # 3. 外设接线
     if periphs:
@@ -739,19 +734,18 @@ def generate_wiring_diagram(mcu_model: str, peripherals_str: str = "",
     if mcu.pinout_svg:
         y_offset += 10
         svg += f'''
-    <rect x="30" y="{y_offset}" width="{canvas_w-60}" height="170" rx="8"
+    <rect x="30" y="{y_offset}" width="{canvas_w-60}" height="{PINOUT_BOX_H}" rx="8"
           fill="#f9fbe7" stroke="#827717" stroke-width="1"/>
     <text x="{canvas_w//2}" y="{y_offset+20}" text-anchor="middle" font-size="12" font-weight="bold"
           fill="#827717">{mcu.model} — Pinout</text>'''
         # 嵌入 MCU 引脚子图
-        for line in mcu.pinout_svg.split('\n'):
-            if '<g' in line or '<text' in line or '<rect' in line:
-                # 调整坐标偏移
-                adjusted = line
-                if 'x=' in line and 'transform' not in line:
-                    svg += f'    {adjusted}\n'
-                else:
-                    svg += f'    {line}\n'
+        # 原实现按行筛标签，会丢掉 </g> 使 SVG 非法；且子图坐标从 y=25 起，
+        # 直接嵌入会与上方 Pinout 标题重叠。改为整体包裹一层 translate 下移。
+        if '</g>' in mcu.pinout_svg:
+            inner = mcu.pinout_svg[mcu.pinout_svg.index('<g'):mcu.pinout_svg.rindex('</g>') + 4]
+            svg += f'    <g transform="translate(0, {y_offset + 22})">'
+            svg += inner[inner.index('>') + 1:-4]
+            svg += '</g>\n'
     
     # 底部信息
     svg += f'''

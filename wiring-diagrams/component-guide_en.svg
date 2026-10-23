@@ -4,11 +4,14 @@
   <text x="350" y="28" text-anchor="middle" font-size="18" font-weight="bold" fill="#333">Component Shopping Guide</text>
 
     <rect x="30" y="50" width="640" height="35" rx="5" fill="#1565c0"/>
-    <text x="350" y="73" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Essential Components (Budget ~$5-15 USD)</text>
+    <text x="350" y="73" text-anchor="middle" font-size="14" font-weight="bold"
+          fill="white">Essential Components (Budget ~$5-15 USD)</text>
     <rect x="30" y="85" width="280" height="25" rx="3" fill="#e3f2fd"/>
-    <text x="170" y="103" text-anchor="middle" font-size="11" font-weight="bold" fill="#1565c0">Component</text>
+    <text x="170" y="103" text-anchor="middle" font-size="11" font-weight="bold"
+          fill="#1565c0">Component</text>
     <rect x="310" y="85" width="360" height="25" rx="3" fill="#e3f2fd"/>
-    <text x="450" y="103" text-anchor="middle" font-size="11" font-weight="bold" fill="#1565c0">Description / Buying Tips</text>
+    <text x="450" y="103" text-anchor="middle" font-size="11" font-weight="bold"
+          fill="#1565c0">Description / Buying Tips</text>
     <rect x="30" y="125" width="280" height="28" fill="#fff"/>
     <text x="170" y="143" text-anchor="middle" font-size="10" fill="#333">① STM32 Dev Board</text>
     <rect x="310" y="125" width="360" height="28" fill="#fff"/>
@@ -38,7 +41,8 @@
     <rect x="310" y="293" width="360" height="28" fill="#fff"/>
     <text x="450" y="311" text-anchor="middle" font-size="9" fill="#666">$0.5-1 | Needed with breadboard</text>
     <rect x="30" y="331" width="640" height="30" rx="5" fill="#e8f5e9"/>
-    <text x="350" y="351" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">🔑 Core: Dev Board + Debugger + Dupont Wires = $4-8</text>
+    <text x="350" y="351" text-anchor="middle" font-size="11" font-weight="bold"
+          fill="#2e7d32">🔑 Core: Dev Board + Debugger + Dupont Wires = $4-8</text>
     <rect x="30" y="381" width="640" height="162" rx="8" fill="#fff3e0" stroke="#ff9800" stroke-width="1.5"/>
     <text x="50" y="403" font-size="13" font-weight="bold" fill="#e65100">💡 Shopping Tips</text>
     <text x="50" y="426" font-size="10" fill="#795548">▸ Beginners: STM32F103C8T6 (most tutorials)</text>

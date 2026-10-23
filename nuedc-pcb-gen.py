@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-nuedc-pcb-gen.py — 全国大学生电子设计竞赛 PCB 全流程辅助工具
+nuedc-pcb-gen.py — 全国大学生电子设计竞赛 PCB 参数计算工具
 
-功能:
-  1. 电路模板库: Buck/Boost/LDO/运放/H桥/恒流源/滤波器/电机驱动 (8种)
-  2. SVG 原理图自动生成 (带元件符号+连线+标号)
-  3. 立创EDA网表 JSON 导出 (可手动导入)
-  4. BOM CSV 导出 (立创商城料号 + 规格)
-  5. PCB 布局图 SVG (元件摆放位置指导)
-  6. 走线规则 + Gerber 下单参数
+已实现（本脚本只做参数计算，不出图/不导出）:
+  1. Buck 降压变换器参数计算（占空比 / 电感 / 输出电容 / 器件耐压）
+  2. Boost 升压变换器参数计算
+  3. 同相运放增益与 dB 换算
+
+元件库 LCSC_PARTS 仅供查料号参考，未与计算流程耦合。
+原理图/布局 SVG 见 nuedc-pcb-svg.py 与 nuedc-pcb-place.py。
 
 用法:
     # 列出支持的电路模板

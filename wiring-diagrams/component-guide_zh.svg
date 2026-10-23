@@ -4,11 +4,14 @@
   <text x="350" y="28" text-anchor="middle" font-size="18" font-weight="bold" fill="#333">器材选购指南</text>
 
     <rect x="30" y="50" width="640" height="35" rx="5" fill="#1565c0"/>
-    <text x="350" y="73" text-anchor="middle" font-size="14" font-weight="bold" fill="white">入门必备器材（总预算约 ¥30-100）</text>
+    <text x="350" y="73" text-anchor="middle" font-size="14" font-weight="bold"
+          fill="white">入门必备器材（总预算约 ¥30-100）</text>
     <rect x="30" y="85" width="280" height="25" rx="3" fill="#e3f2fd"/>
-    <text x="170" y="103" text-anchor="middle" font-size="11" font-weight="bold" fill="#1565c0">器材</text>
+    <text x="170" y="103" text-anchor="middle" font-size="11" font-weight="bold"
+          fill="#1565c0">器材</text>
     <rect x="310" y="85" width="360" height="25" rx="3" fill="#e3f2fd"/>
-    <text x="450" y="103" text-anchor="middle" font-size="11" font-weight="bold" fill="#1565c0">说明 / 选购建议</text>
+    <text x="450" y="103" text-anchor="middle" font-size="11" font-weight="bold"
+          fill="#1565c0">说明 / 选购建议</text>
     <rect x="30" y="125" width="280" height="28" fill="#fff"/>
     <text x="170" y="143" text-anchor="middle" font-size="10" fill="#333">① STM32 最小系统板</text>
     <rect x="310" y="125" width="360" height="28" fill="#fff"/>
@@ -38,7 +41,8 @@
     <rect x="310" y="293" width="360" height="28" fill="#fff"/>
     <text x="450" y="311" text-anchor="middle" font-size="9" fill="#666">¥3-5   | 面包板使用时需要</text>
     <rect x="30" y="331" width="640" height="30" rx="5" fill="#e8f5e9"/>
-    <text x="350" y="351" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">🔑 核心装备只需前三样: 开发板 + 调试器 + 杜邦线 = ¥27-50</text>
+    <text x="350" y="351" text-anchor="middle" font-size="11" font-weight="bold"
+          fill="#2e7d32">🔑 核心装备只需前三样: 开发板 + 调试器 + 杜邦线 = ¥27-50</text>
     <rect x="30" y="381" width="640" height="162" rx="8" fill="#fff3e0" stroke="#ff9800" stroke-width="1.5"/>
     <text x="50" y="403" font-size="13" font-weight="bold" fill="#e65100">💡 选购小贴士</text>
     <text x="50" y="426" font-size="10" fill="#795548">▸ 初学者首选 STM32F103C8T6（资料最多，教程最丰富）</text>

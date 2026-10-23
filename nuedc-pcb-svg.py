@@ -7,6 +7,8 @@ RES_SYM_LEAD = 8                   # 电阻引线长度
 CAP_SYM_HALF_W, CAP_SYM_GAP = 10, 3  # 电容极板半宽 / 极板间距
 IND_SYM_HALF_W, IND_SYM_WIND_H = 6, 4  # 电感线圈半宽 / 波峰高度
 IC_PIN_W, IC_PIN_H = 6, 8          # IC 引脚矩形宽 / 高
+DIODE_SYM_HALF_W = 8               # 二极管三角形半宽
+DIODE_SYM_TOP, DIODE_SYM_BOTTOM = -8, 2  # 三角形上下顶点相对 y 的偏移
 
 def svg_header(title):
     xml_decl = '<?xml version="1.0" encoding="UTF-8"?>'
@@ -33,7 +35,7 @@ def res_sym(x, y, label="R", val="10k"):
     return s
 
 def cap_sym(x, y, label="C", val="10uF"):
-    s = '<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#333" stroke-width="2"/>' % (x, y-15, x, y)
+    s = '<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#333" stroke-width="2"/>' % (x, y - 15, x, y)
     s += '<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#333" stroke-width="2"/>' % (
         x - CAP_SYM_HALF_W, y, x + CAP_SYM_HALF_W, y)
     s += '<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#333" stroke-width="2"/>' % (
@@ -63,8 +65,10 @@ def inductor_sym(x, y, label="L", val="10uH"):
 def diode_sym(x, y, label="D", val="SS34"):
     s = '<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#333" stroke-width="2"/>' % (x, y-15, x, y-3)
     s += '<polygon points="%d,%d %d,%d %d,%d" fill="none" stroke="#333" stroke-width="2"/>' % (
-        x - 8, y - 3, x + 8, y - 8, x + 8, y + 2)
-    s += '<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#333" stroke-width="2"/>' % (x+8, y-8, x+8, y+2)
+        x - DIODE_SYM_HALF_W, y - 3, x + DIODE_SYM_HALF_W, y + DIODE_SYM_TOP,
+        x + DIODE_SYM_HALF_W, y + DIODE_SYM_BOTTOM)
+    s += '<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#333" stroke-width="2"/>' % (
+        x + DIODE_SYM_HALF_W, y + DIODE_SYM_TOP, x + DIODE_SYM_HALF_W, y + DIODE_SYM_BOTTOM)
     s += '<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#333" stroke-width="2"/>' % (x, y+2, x, y+18)
     s += '<text x="%d" y="%d" font-size="11" fill="#333">%s</text>' % (x+15, y, label)
     if val: s += '<text x="%d" y="%d" font-size="9" fill="#666">%s</text>' % (x+15, y+14, val)
@@ -107,12 +111,20 @@ def vcc_label(x, y, val="3.3V"):
 def net_label(x, y, text):
     return '<text x="%d" y="%d" font-size="10" fill="#1565c0" font-weight="bold">%s</text>' % (x, y, text)
 
+def _load_pcb_gen():
+    """按文件路径加载同目录下 nuedc-pcb-gen.py 模块（文件名含连字符，无法直接 import）"""
+    import importlib.util as _iu
+    spec = _iu.spec_from_file_location('_pcb_gen', __file__.replace('-svg', '-gen'))
+    if spec is None or spec.loader is None:
+        raise ImportError('无法加载 nuedc-pcb-gen.py')
+    module = _iu.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def gen_buck_schematic(vin, vout, iout, fsw, output_path):
     """Generate full Buck converter schematic SVG"""
-    import importlib.util as _iu
-    _s = _iu.spec_from_file_location('_pg', __file__.replace('-svg','-gen'))
-    _m = _iu.module_from_spec(_s); _s.loader.exec_module(_m); calc_buck = _m.calc_buck
-    params = calc_buck(vin, vout, iout, fsw)
+    params = _load_pcb_gen().calc_buck(vin, vout, iout, fsw)
     
     svg = svg_header('Buck Converter: %dV → %dV @ %dA (%dkHz)' % (vin, vout, iout, fsw//1000))
 
@@ -167,10 +179,7 @@ def gen_buck_schematic(vin, vout, iout, fsw, output_path):
 
 def gen_boost_schematic(vin, vout, iout, fsw, output_path):
     """Generate full Boost converter schematic SVG"""
-    import importlib.util as _iu
-    _s = _iu.spec_from_file_location('_pg2', __file__.replace('-svg','-gen'))
-    _m = _iu.module_from_spec(_s); _s.loader.exec_module(_m); calc_boost = _m.calc_boost
-    params = calc_boost(vin, vout, iout, fsw)
+    params = _load_pcb_gen().calc_boost(vin, vout, iout, fsw)
     
     svg = svg_header('Boost Converter: %dV → %dV @ %dA (%dkHz)' % (vin, vout, iout, fsw//1000))
     
