@@ -603,9 +603,11 @@ def draw_debug_wiring(svg, mcu_info, debug_mode, x, y, lang):
             ("3.3V", "3.3V", "#f44336"),
         ]
     else:  # uart
+        # 用有序列表取值，引脚不足 2 个时回退 "?" 而非 IndexError
+        uart_pins = list(mcu_info.uart_pins.values()) + ["?", "?"]
         wire_pins = [
-            ("TX", mcu_info.uart_pins.get(list(mcu_info.uart_pins.keys())[0], "?"), "#00bcd4"),
-            ("RX", mcu_info.uart_pins.get(list(mcu_info.uart_pins.keys())[1], "?"), "#ff5722"),
+            ("TX", uart_pins[0], "#00bcd4"),
+            ("RX", uart_pins[1], "#ff5722"),
             ("GND", "GND", "#000"),
             ("3.3V", "3.3V", "#f44336"),
         ]
@@ -764,8 +766,12 @@ def generate_wiring_diagram(mcu_model: str, peripherals_str: str = "",
         print(f"[✓] 已生成: {output_path}  ({len(svg)//1024} KB)")
     else:
         out_dir = Path(__file__).parent / "wiring-diagrams"
-        out_dir.mkdir(exist_ok=True)
-        
+        try:
+            out_dir.mkdir(exist_ok=True)
+        except OSError as e:
+            print(f"[!] 无法创建输出目录 {out_dir}: {e}")
+            return ""
+
         # 构造文件名
         fname = f"wiring_{mcu_model}"
         if debug_mode != "swd":
@@ -880,7 +886,11 @@ def generate_component_guide(lang="zh", output_path=None):
         print(f"[✓] 已生成: {output_path}")
     else:
         out_dir = Path(__file__).parent / "wiring-diagrams"
-        out_dir.mkdir(exist_ok=True)
+        try:
+            out_dir.mkdir(exist_ok=True)
+        except OSError as e:
+            print(f"[!] 无法创建输出目录 {out_dir}: {e}")
+            return ""
         path = out_dir / f"component-guide_{lang}.svg"
         try:
             path.write_text(svg, encoding="utf-8")
@@ -993,7 +1003,11 @@ def main():
     # ── 全生成模式 ──
     if args.all:
         out_dir = Path(__file__).parent / "wiring-diagrams"
-        out_dir.mkdir(exist_ok=True)
+        try:
+            out_dir.mkdir(exist_ok=True)
+        except OSError as e:
+            print(f"[!] 无法创建输出目录 {out_dir}: {e}")
+            return
         
         # 每个 MCU 生成默认接线图
         for mcu_key in MCU_DB:

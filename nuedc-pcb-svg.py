@@ -6,9 +6,11 @@ RES_SYM_W, RES_SYM_STEP = 8, 4     # 电阻锯齿半宽 / 单级步进
 RES_SYM_LEAD = 8                   # 电阻引线长度
 CAP_SYM_HALF_W, CAP_SYM_GAP = 10, 3  # 电容极板半宽 / 极板间距
 IND_SYM_HALF_W, IND_SYM_WIND_H = 6, 4  # 电感线圈半宽 / 波峰高度
+IND_SYM_PITCH, IND_SYM_LEAD = 7, 5     # 线圈波峰间距 / 下引线余量
 IC_PIN_W, IC_PIN_H = 6, 8          # IC 引脚矩形宽 / 高
 DIODE_SYM_HALF_W = 8               # 二极管三角形半宽
 DIODE_SYM_TOP, DIODE_SYM_BOTTOM = -8, 2  # 三角形上下顶点相对 y 的偏移
+DIODE_SYM_LEAD_TOP = 15            # 二极管上引线起点相对 y 的偏移
 
 def svg_header(title):
     xml_decl = '<?xml version="1.0" encoding="UTF-8"?>'
@@ -48,28 +50,32 @@ def cap_sym(x, y, label="C", val="10uF"):
     return s
 
 def inductor_sym(x, y, label="L", val="10uH"):
-    s = '<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#333" stroke-width="2"/>' % (x, y-15, x, y-10)
+    s = '<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#333" stroke-width="2"/>' % (
+        x, y - 15, x, y - 10)
     for i in range(4):
-        ry = y - 10 + i * 7
+        ry = y - 10 + i * IND_SYM_PITCH
         s += '<path d="M %d %d Q %d %d %d %d" fill="none" stroke="#333" stroke-width="2"/>' % (
             x - IND_SYM_HALF_W, ry, x + IND_SYM_HALF_W, ry - IND_SYM_WIND_H,
             x + IND_SYM_HALF_W, ry)
         s += '<path d="M %d %d Q %d %d %d %d" fill="none" stroke="#333" stroke-width="2"/>' % (
             x + IND_SYM_HALF_W, ry, x - IND_SYM_HALF_W, ry + IND_SYM_WIND_H,
             x - IND_SYM_HALF_W, ry)
-    s += '<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#333" stroke-width="2"/>' % (x, y+18, x, y+23)
+    s += '<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#333" stroke-width="2"/>' % (
+        x, y + 18, x, y + 18 + IND_SYM_LEAD)
     s += '<text x="%d" y="%d" font-size="11" fill="#333">%s</text>' % (x+15, y, label)
     if val: s += '<text x="%d" y="%d" font-size="9" fill="#666">%s</text>' % (x+15, y+14, val)
     return s
 
 def diode_sym(x, y, label="D", val="SS34"):
-    s = '<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#333" stroke-width="2"/>' % (x, y-15, x, y-3)
+    s = '<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#333" stroke-width="2"/>' % (
+        x, y - DIODE_SYM_LEAD_TOP, x, y - 3)
     s += '<polygon points="%d,%d %d,%d %d,%d" fill="none" stroke="#333" stroke-width="2"/>' % (
         x - DIODE_SYM_HALF_W, y - 3, x + DIODE_SYM_HALF_W, y + DIODE_SYM_TOP,
         x + DIODE_SYM_HALF_W, y + DIODE_SYM_BOTTOM)
     s += '<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#333" stroke-width="2"/>' % (
         x + DIODE_SYM_HALF_W, y + DIODE_SYM_TOP, x + DIODE_SYM_HALF_W, y + DIODE_SYM_BOTTOM)
-    s += '<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#333" stroke-width="2"/>' % (x, y+2, x, y+18)
+    s += '<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#333" stroke-width="2"/>' % (
+        x, y + 2, x, y + 18)
     s += '<text x="%d" y="%d" font-size="11" fill="#333">%s</text>' % (x+15, y, label)
     if val: s += '<text x="%d" y="%d" font-size="9" fill="#666">%s</text>' % (x+15, y+14, val)
     return s

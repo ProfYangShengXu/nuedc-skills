@@ -372,7 +372,9 @@ def diff_logs(old_path, new_path):
     lines = []
     lines.append("=" * 60)
     lines.append("Build Diff Report")
-    lines.append(f"  Old: {old.error_count}E/{old.warning_count}W -> New: {new.error_count}E/{new.warning_count}W")
+    lines.append(
+        f"  Old: {old.error_count}E/{old.warning_count}W -> "
+        f"New: {new.error_count}E/{new.warning_count}W")
     lines.append("=" * 60)
     
     if fixed:
@@ -437,10 +439,23 @@ def main():
         idx = sys.argv.index("--watch") + 1
         if idx < len(sys.argv):
             watch_log(sys.argv[idx])
+        else:
+            print("[!] --watch 需要一个日志文件路径")
+            print("    用法: python keil-log-analyzer.py --watch build.log")
         return
     
     # 取日志源 (文件 或 stdin)
     log_sources = [a for a in sys.argv[1:] if not a.startswith('--')]
+    
+    # 差异比较：需要两个日志文件
+    if "--diff" in sys.argv:
+        idx = sys.argv.index("--diff") + 1
+        if idx >= len(sys.argv) or not log_sources:
+            print("[!] --diff 需要两个日志文件")
+            print("    用法: python keil-log-analyzer.py build.log --diff previous.log")
+            return
+        print(diff_logs(sys.argv[idx], log_sources[0]))
+        return
     
     if not log_sources:
         # Read from stdin
@@ -448,13 +463,6 @@ def main():
         log = BuildLog().parse_text(text)
     else:
         log = BuildLog().parse_file(log_sources[0])
-    
-    # 差异比较
-    if "--diff" in sys.argv:
-        idx = sys.argv.index("--diff") + 1
-        if idx < len(sys.argv):
-            print(diff_logs(sys.argv[idx], log_sources[0]))
-            return
     
     # 输出
     if "--json" in sys.argv:
@@ -465,7 +473,8 @@ def main():
             print(f"Time: {log.build_time}")
         if log.memory:
             m = log.memory
-            print(f"Code: {m['code']}B  RO: {m['ro_data']}B  RW: {m['rw_data']}B  ZI: {m['zi_data']}B")
+            print(f"Code: {m['code']}B  RO: {m['ro_data']}B  "
+                  f"RW: {m['rw_data']}B  ZI: {m['zi_data']}B")
     else:
         print(log.report_text())
     

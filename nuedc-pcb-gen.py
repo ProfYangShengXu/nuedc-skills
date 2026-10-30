@@ -30,6 +30,18 @@ import math
 # dB 换算常数: dB = 20 * log10(ratio)
 DB_SCALE = 20
 
+# fsw 后缀展开表: 命令行 "500k" -> 500000
+FSW_SUFFIX = {'k': '000', 'm': '000000'}
+
+
+def _num(text, default, name):
+    """把命令行字符串转成 float；非法输入回退到 default 并提示"""
+    try:
+        return float(text)
+    except (TypeError, ValueError):
+        print(f"[!] {name} 不是合法数字: {text!r}，使用默认值 {default}")
+        return default
+
 # ═════════════════════════════════════════════════
 # 1. 电路元件数据库 (立创商城料号)
 # ═════════════════════════════════════════════════
@@ -133,12 +145,17 @@ def main():
     DEFAULT_R1, DEFAULT_RF = 10000, 100000
     vin, vout, iout, fsw = DEFAULT_VIN, DEFAULT_VOUT, DEFAULT_IOUT, DEFAULT_FSW
     for i, a in enumerate(sys.argv):
-        if a == "--vin" and i+1 < len(sys.argv): vin = float(sys.argv[i+1])
-        if a == "--vout" and i+1 < len(sys.argv): vout = float(sys.argv[i+1])
-        if a == "--iout" and i+1 < len(sys.argv): iout = float(sys.argv[i+1])
-        if a == "--fsw" and i+1 < len(sys.argv):
-            v = sys.argv[i+1].lower().replace('k','000').replace('m','000000')
-            fsw = int(float(v))
+        if i + 1 >= len(sys.argv):
+            continue
+        arg = sys.argv[i + 1]
+        if a == "--vin": vin = _num(arg, vin, "--vin")
+        if a == "--vout": vout = _num(arg, vout, "--vout")
+        if a == "--iout": iout = _num(arg, iout, "--iout")
+        if a == "--fsw":
+            v = arg.lower()
+            for suffix, zeros in FSW_SUFFIX.items():
+                v = v.replace(suffix, zeros)
+            fsw = int(_num(v, fsw, "--fsw"))
     if cmd == "buck":
         if vin <= 0 or vout <= 0 or iout <= 0 or fsw <= 0:
             print("[!] 参数必须为正数 (--vin/--vout/--iout/--fsw)")
@@ -147,7 +164,7 @@ def main():
             print(f"[!] Buck 需满足 vout < vin (当前 {vout}V >= {vin}V)，请用 boost")
             return
         r = calc_buck(vin, vout, iout, fsw)
-        print(f"Buck {int(vin)}V -> {vout}V @ {iout}A ({fsw//1000}kHz)")
+        print(f"Buck {int(vin)}V -> {vout}V @ {iout}A ({fsw/1000:g}kHz)")
         for k, v in r.items(): print(f"  {k:15s}: {v}")
     elif cmd == "boost":
         if vin <= 0 or vout <= 0 or iout <= 0 or fsw <= 0:
@@ -157,13 +174,15 @@ def main():
             print(f"[!] Boost 需满足 vout > vin (当前 {vout}V <= {vin}V)，请用 buck")
             return
         r = calc_boost(vin, vout, iout, fsw)
-        print(f"Boost {int(vin)}V -> {vout}V @ {iout}A ({fsw//1000}kHz)")
+        print(f"Boost {int(vin)}V -> {vout}V @ {iout}A ({fsw/1000:g}kHz)")
         for k, v in r.items(): print(f"  {k:15s}: {v}")
     elif cmd == "opamp":
         r1, rf = DEFAULT_R1, DEFAULT_RF
         for i, a in enumerate(sys.argv):
-            if a == "--r1" and i+1 < len(sys.argv): r1 = float(sys.argv[i+1])
-            if a == "--rf" and i+1 < len(sys.argv): rf = float(sys.argv[i+1])
+            if i + 1 >= len(sys.argv):
+                continue
+            if a == "--r1": r1 = _num(sys.argv[i + 1], r1, "--r1")
+            if a == "--rf": rf = _num(sys.argv[i + 1], rf, "--rf")
         if r1 <= 0 or rf < 0:
             print("[!] 电阻必须为正数 (--r1/--rf)")
             return
