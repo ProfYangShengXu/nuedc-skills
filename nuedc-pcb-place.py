@@ -97,8 +97,7 @@ def gen_layout_svg(topo, out_path):
 
 def gen_kicad_script(topo, out_path):
     p = PLACEMENTS[topo]
-    bs = p["board"].split(" x ")
-    w, h = bs[0], bs[1]
+    w, h = (v.strip() for v in p["board"].split(" x ", 1))  # 保留完整浮点，避免 "50.5" 被切成 "50."
     lines = [
         '#!/usr/bin/env python3',
         '"""KiCad auto-placement for ' + p["topo"] + '"""',
@@ -119,6 +118,10 @@ def gen_kicad_script(topo, out_path):
     ]
     for ref, part, nx, ny, rot in p["parts"]:
         fp = FP.get(part, "")
+        # 封装名缺失时生成调用会变成 FootprintLoad("","")，提前报出而不是静默失败
+        if not fp:
+            print(f"[!] 元件 {ref} 的封装 '{part}' 未在 FP 表中定义，已跳过")
+            continue
         x = f'pcbnew.FromMM({float(nx)*float(w):.1f})'
         y = f'pcbnew.FromMM({float(ny)*float(h):.1f})'
         # rot 为 0 时省略角度设置，避免生成冗余调用

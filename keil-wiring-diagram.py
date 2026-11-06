@@ -47,6 +47,8 @@ from typing import Optional
 # 版面尺寸常量（px）
 WARNING_BOX_H = 70   # 安全警告框高度
 PINOUT_BOX_H = 170   # MCU 引脚图区高度
+CANVAS_W = 800       # 画布最小宽度
+BASE_H = 200         # 画布基础高度（标题 + 内边距）
 
 @dataclass
 class MCUInfo:
@@ -674,9 +676,8 @@ def generate_wiring_diagram(mcu_model: str, peripherals_str: str = "",
     
     periphs = parse_peripherals(peripherals_str)
     
-    # 计算画布大小（动态）
-    base_w = 650
-    base_h = 200
+    # 计算画布大小（动态）；原先 base_w=650 随即被 max(..., 800) 覆盖，已直接消除该无效中间变量
+    base_h = BASE_H
     
     # 调试器区域高度
     pin_count = 4 if debug_mode in ("swd", "uart") else 6
@@ -687,7 +688,7 @@ def generate_wiring_diagram(mcu_model: str, peripherals_str: str = "",
     if periphs:
         periph_h = 80 + (len(periphs) * 80)
     
-    canvas_w = max(base_w, 800)
+    canvas_w = CANVAS_W
     # 警告框固定 70 高，Pinout 区固定 170 高，此前漏算导致内容溢出画布
     canvas_h = base_h + debug_h + periph_h + WARNING_BOX_H + PINOUT_BOX_H + 40
     
@@ -914,12 +915,9 @@ def detect_mcu_from_project(project_path: str) -> Optional[str]:
         print(f"[!] 解析项目文件失败 {project_path}: {e}")
         return None
     root = tree.getroot()
-    # 搜索 Device 标签
+    # 按文档顺序取第一个非空的 Device / TDeviceTypeName 文本；两者都可能出现，故同轮遍历
     for elem in root.iter():
-        if elem.tag == "Device" and elem.text:
-            return elem.text.strip()
-        # 搜索 TDeviceTypeName
-        if elem.tag == "TDeviceTypeName" and elem.text:
+        if elem.tag in ("Device", "TDeviceTypeName") and elem.text:
             return elem.text.strip()
     return None
 
@@ -1030,14 +1028,15 @@ def main():
         return
     
     # ── 单次生成 ──
-    # 匹配 MCU
-    matched_mcu = None
-    for key in MCU_DB:
-        if mcu_model.upper() in key.upper():
-            matched_mcu = key
-            break
-    if not matched_mcu and mcu_model in MCU_DB:
-        matched_mcu = mcu_model
+    # 匹配 MCU：先精确命中，再退化为子串匹配；原实现只做 key in model 的单向包含判断，
+    # 会把 "STM32F103C8T6" 之类的完整型号误判为无匹配（或匹配到更短的别名）
+    matched_mcu = mcu_model if mcu_model in MCU_DB else None
+    if not matched_mcu:
+        wanted = mcu_model.upper()
+        for key in MCU_DB:
+            if wanted in key.upper() or key.upper() in wanted:
+                matched_mcu = key
+                break
     
     if not matched_mcu:
         print(f"[!] 未找到 MCU 型号 '{mcu_model}'")

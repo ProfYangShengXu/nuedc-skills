@@ -19,7 +19,7 @@ import json
 from typing import Optional
 
 # ═══════════════════════════════════════════════
-# 赛题数据库（内建，涵盖2019-2025年）
+# 赛题数据库（内建，实际覆盖 2020-2025 年，非连续年份）
 # ═══════════════════════════════════════════════
 
 PROBLEMS_DB = {
@@ -217,36 +217,44 @@ def main():
     
     if "--year" in sys.argv:
         idx = sys.argv.index("--year") + 1
-        if idx < len(sys.argv):
-            year = sys.argv[idx]
-            problems = get_year_problems(year)
-            if problems:
-                print(f"\n{year}年赛题列表:")
-                print(f"{'题号':<12} {'题目名称':<35} {'类别':<12}")
-                print("-" * 60)
-                for p in problems:
-                    print(f"{p['id']:<12} {p['title']:<35} {p['category']:<12}")
-                
-                if "--json" in sys.argv:
-                    print("\n--- JSON ---")
-                    print(json.dumps(problems, ensure_ascii=False, indent=2))
-            else:
-                print(f"未找到 {year} 年的数据")
+        # 缺参数时原先静默退出且返回码 0，改为明确提示
+        if idx >= len(sys.argv) or sys.argv[idx].startswith("--"):
+            print("[!] --year 需要一个年份参数，例如: --year 2025")
+            print("    可用年份见 --list-years")
+            return
+        year = sys.argv[idx]
+        problems = get_year_problems(year)
+        if problems:
+            print(f"\n{year}年赛题列表:")
+            print(f"{'题号':<12} {'题目名称':<35} {'类别':<12}")
+            print("-" * 60)
+            for p in problems:
+                print(f"{p['id']:<12} {p['title']:<35} {p['category']:<12}")
+            
+            if "--json" in sys.argv:
+                print("\n--- JSON ---")
+                print(json.dumps(problems, ensure_ascii=False, indent=2))
+        else:
+            print(f"未找到 {year} 年的数据 (可用 --list-years 查看可用年份)")
         return
     
     if "--problem" in sys.argv:
         idx = sys.argv.index("--problem") + 1
-        if idx < len(sys.argv):
-            pid = sys.argv[idx]
-            problem = get_problem_detail(pid)
-            if problem is None:
-                # 找不到赛题时给出明确错误，避免输出裸 null
-                print(f"未找到赛题: {pid} (可用 --list-years 查看可用年份)")
-                return
-            if "--json" in sys.argv:
-                print(json.dumps(problem, ensure_ascii=False, indent=2))
-            else:
-                print(export_problem_template(pid))
+        # 缺参数时原先静默退出且返回码 0，改为明确提示
+        if idx >= len(sys.argv) or sys.argv[idx].startswith("--"):
+            print("[!] --problem 需要赛题编号，例如: --problem 2025-A")
+            print("    可用赛题见 --list-years 配合 --year")
+            return
+        pid = sys.argv[idx]
+        problem = get_problem_detail(pid)
+        if problem is None:
+            # 找不到赛题时给出明确错误，避免输出裸 null
+            print(f"未找到赛题: {pid} (可用 --list-years 查看可用年份)")
+            return
+        if "--json" in sys.argv:
+            print(json.dumps(problem, ensure_ascii=False, indent=2))
+        else:
+            print(export_problem_template(pid))
         return
     
     if "--update-db" in sys.argv:

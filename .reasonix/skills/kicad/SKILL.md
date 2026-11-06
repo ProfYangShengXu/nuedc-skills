@@ -35,7 +35,7 @@ kicad-cli --help           # 查看所有 CLI 命令
 
 ```bash
 # 在 KiCad 内置 Python 中运行
-& "C:\Program Files\KiCad.0in\python.exe" -c "import pcbnew; print(pcbnew.VERSION)"
+& "C:\Program Files\KiCad\10.0\bin\python.exe" -c "import pcbnew; print(pcbnew.VERSION)"
 ```
 
 ---
@@ -158,7 +158,7 @@ print("[OK] Gerber exported to gerber/")
 python nuedc-pcb-place.py buck --kicad-script
 
 # 2. 在 KiCad Python 环境中运行
-# C:\Program Files\KiCad.0in\python.exe wiring-diagrams/kicad_auto_buck.py
+# "C:\Program Files\KiCad\10.0\bin\python.exe" wiring-diagrams/kicad_auto_buck.py
 
 # 3. 产出 auto_placed.kicad_pcb
 # 4. 在 KiCad PCB Editor 中打开 → Route → Auto-route

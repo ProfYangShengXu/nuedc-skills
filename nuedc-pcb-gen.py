@@ -33,6 +33,11 @@ DB_SCALE = 20
 # fsw 后缀展开表: 命令行 "500k" -> 500000
 FSW_SUFFIX = {'k': '000', 'm': '000000'}
 
+# 电感电流纹波系数 (ΔIL / Iout) 与选型余量、输出电容纹波上限
+RIPPLE_RATIO = 0.3    # 30% 纹波
+L_MARGIN = 1.2        # 电感取值留 20% 余量
+COUT_RIPPLE = 0.01    # 输出电压纹波 1%
+
 
 def _num(text, default, name):
     """把命令行字符串转成 float；非法输入回退到 default 并提示"""
@@ -44,6 +49,8 @@ def _num(text, default, name):
 
 # ═════════════════════════════════════════════════
 # 1. 电路元件数据库 (立创商城料号)
+# 注意: 本表为纯数据参考，当前无任何代码读取它（见模块 docstring 说明），
+#       保留是因为它是完整料号清单，供人工查料使用。
 # ═════════════════════════════════════════════════
 
 LCSC_PARTS = {
@@ -92,9 +99,9 @@ LCSC_PARTS = {
 def calc_buck(vin, vout, iout, fsw):
     """Buck 降压电路参数计算"""
     d = vout / vin  # 占空比
-    l_min = (vin - vout) * d / (fsw * iout * 0.3)  # 30% ripple
-    l = l_min * 1.2  # 取20%余量
-    cout_min = iout * d / (fsw * vout * 0.01)  # 1% ripple
+    l_min = (vin - vout) * d / (fsw * iout * RIPPLE_RATIO)
+    l = l_min * L_MARGIN
+    cout_min = iout * d / (fsw * vout * COUT_RIPPLE)
     return {
         "duty": round(d, 3),
         "l_min_uh": round(l_min * 1e6, 1),
@@ -107,9 +114,9 @@ def calc_buck(vin, vout, iout, fsw):
 def calc_boost(vin, vout, iout, fsw):
     """Boost 升压电路参数计算"""
     d = 1 - vin / vout
-    l_min = vin * d / (fsw * iout * 0.3)
-    l = l_min * 1.2
-    cout_min = iout * d / (fsw * vout * 0.01)
+    l_min = vin * d / (fsw * iout * RIPPLE_RATIO)
+    l = l_min * L_MARGIN
+    cout_min = iout * d / (fsw * vout * COUT_RIPPLE)
     return {
         "duty": round(d, 3),
         "l_min_uh": round(l_min * 1e6, 1),

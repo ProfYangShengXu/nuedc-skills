@@ -5,6 +5,7 @@ SVG_W, SVG_H = 1000, 700
 RES_SYM_W, RES_SYM_STEP = 8, 4     # 电阻锯齿半宽 / 单级步进
 RES_SYM_LEAD = 8                   # 电阻引线长度
 CAP_SYM_HALF_W, CAP_SYM_GAP = 10, 3  # 电容极板半宽 / 极板间距
+CAP_SYM_LEAD_TOP = 15              # 上引线起点相对 y 的偏移
 IND_SYM_HALF_W, IND_SYM_WIND_H = 6, 4  # 电感线圈半宽 / 波峰高度
 IND_SYM_PITCH, IND_SYM_LEAD = 7, 5     # 线圈波峰间距 / 下引线余量
 IC_PIN_W, IC_PIN_H = 6, 8          # IC 引脚矩形宽 / 高
@@ -37,7 +38,8 @@ def res_sym(x, y, label="R", val="10k"):
     return s
 
 def cap_sym(x, y, label="C", val="10uF"):
-    s = '<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#333" stroke-width="2"/>' % (x, y - 15, x, y)
+    s = '<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#333" stroke-width="2"/>' % (
+        x, y - CAP_SYM_LEAD_TOP, x, y)
     s += '<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#333" stroke-width="2"/>' % (
         x - CAP_SYM_HALF_W, y, x + CAP_SYM_HALF_W, y)
     s += '<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#333" stroke-width="2"/>' % (
@@ -132,7 +134,7 @@ def gen_buck_schematic(vin, vout, iout, fsw, output_path):
     """Generate full Buck converter schematic SVG"""
     params = _load_pcb_gen().calc_buck(vin, vout, iout, fsw)
     
-    svg = svg_header('Buck Converter: %dV → %dV @ %dA (%dkHz)' % (vin, vout, iout, fsw//1000))
+    svg = svg_header('Buck Converter: %dV → %dV @ %dA (%gkHz)' % (vin, vout, iout, fsw / 1000))
 
     # 输入滤波部分
     svg += vcc_label(80, 80, '%dV' % vin)
@@ -187,7 +189,7 @@ def gen_boost_schematic(vin, vout, iout, fsw, output_path):
     """Generate full Boost converter schematic SVG"""
     params = _load_pcb_gen().calc_boost(vin, vout, iout, fsw)
     
-    svg = svg_header('Boost Converter: %dV → %dV @ %dA (%dkHz)' % (vin, vout, iout, fsw//1000))
+    svg = svg_header('Boost Converter: %dV → %dV @ %dA (%gkHz)' % (vin, vout, iout, fsw / 1000))
     
     # Input
     svg += vcc_label(80, 80, '%dV' % vin)

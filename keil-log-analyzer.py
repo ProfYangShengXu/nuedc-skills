@@ -450,11 +450,15 @@ def main():
     # 差异比较：需要两个日志文件
     if "--diff" in sys.argv:
         idx = sys.argv.index("--diff") + 1
-        if idx >= len(sys.argv) or not log_sources:
+        # log_sources 会把 --diff 后面的文件名也算进来，故这里排除该值再判断是否只有一个源
+        diff_target = sys.argv[idx] if idx < len(sys.argv) else None
+        others = [s for s in log_sources if s != diff_target]
+        # 只给了一个文件时会把该文件与自身对比并输出"无变化"，具有误导性
+        if not diff_target or len(others) != 1:
             print("[!] --diff 需要两个日志文件")
             print("    用法: python keil-log-analyzer.py build.log --diff previous.log")
             return
-        print(diff_logs(sys.argv[idx], log_sources[0]))
+        print(diff_logs(diff_target, others[0]))
         return
     
     if not log_sources:

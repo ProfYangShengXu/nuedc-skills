@@ -25,7 +25,7 @@
 把整个仓库丢进你的 Reasonix/Claude Code 项目的 `.reasonix/skills/` 目录：
 
 ```bash
-git clone https://github.com/YOUR_USER/nuedc-skills.git .reasonix/skills
+git clone https://github.com/ProfYangShengXu/nuedc-skills.git .reasonix/skills
 ```
 
 然后对 AI 说：
