@@ -46,7 +46,7 @@ RE_ERROR = re.compile(
     r'^(?:\.?[/\\]?)?'                     # optional leading path
     r'([^:]+?)'                             # filename (group 1)
     r'(?:\((\d+)\))?'                       # optional line number (group 2)
-    r'\s*:\s*'                              
+    r'\s*:\s*'
     r'(error|warning|fatal|note|info)'      # severity (group 3)
     r'(\s*#[^:]+)?'                         # optional error code #20 (group 4)
     r':\s*(.+)',                            # message (group 5)
@@ -62,9 +62,11 @@ RE_LINKER = re.compile(
     re.IGNORECASE
 )
 
-# 编译摘要: "0 Error(s), 0 Warning(s)"
+# 编译摘要: "0 Error(s), 0 Warning(s)" / "0 Errors, 0 Warnings"
+# 注意: 原写法 (\d+)\s*Error[s]? 里的 [s]? 只匹配字母 s，而 Keil 实际输出是
+# "Error(s)"（带括号），导致摘要行永远匹配不到、summary 恒为空。改用 (?:\(s\)|s)? 。
 RE_SUMMARY = re.compile(
-    r'(\d+)\s*Error[s]?\s*[,;]?\s*(\d+)\s*Warning[s]?',
+    r'(\d+)\s*Error(?:\(s\)|s)?\s*[,;]?\s*(\d+)\s*Warning(?:\(s\)|s)?',
     re.IGNORECASE
 )
 
@@ -139,6 +141,15 @@ class BuildLog:
     def parse_line(self, line, line_no=0):
         line_s = line.rstrip('\n\r')
         
+        # Summary 必须先判: "0 Error(s), 0 Warning(s)" 形如 "xx Error: ..." 会被 RE_ERROR 误吃
+        m = RE_SUMMARY.search(line_s)
+        if m:
+            self.summary = {
+                'errors': int(m.group(1)),
+                'warnings': int(m.group(2)),
+            }
+            return
+        
         # Try AC6 format first
         m = RE_AC6.match(line_s)
         if m:
@@ -187,15 +198,7 @@ class BuildLog:
             })
             return
         
-        # Summary
-        m = RE_SUMMARY.match(line_s)
-        if m:
-            self.summary = {
-                'errors': int(m.group(1)),
-                'warnings': int(m.group(2)),
-            }
-            return
-        
+        # Summary 已在上方优先判定
         # Memory info
         m = RE_MEMORY.match(line_s)
         if m:
@@ -240,11 +243,12 @@ class BuildLog:
     
     @property
     def error_count(self):
-        return self.summary.get('errors', len(self.errors))
+        # 摘要统计全工程、逐行解析可能只捕获部分，取较大值避免"摘要说 0 却列出错误详情"的自相矛盾
+        return max(self.summary.get('errors', 0), len(self.errors))
     
     @property
     def warning_count(self):
-        return self.summary.get('warnings', len(self.warnings))
+        return max(self.summary.get('warnings', 0), len(self.warnings))
     
     def by_file(self):
         """按文件分组"""

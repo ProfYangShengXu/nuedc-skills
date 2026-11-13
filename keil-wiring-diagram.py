@@ -364,7 +364,6 @@ def draw_warning_box(x, y, w, h, lines, lang="zh"):
 def draw_debugger_box(x, y, name, pin_map, lang="zh"):
     """绘制调试器框图"""
     t = T[lang]
-    pin_labels = {"SWCLK": t["pin_top_view"], "SWDIO": "", "GND": "", "3.3V": ""}
     
     h = 60 + len(pin_map) * 30 + 20
     svg = f'''
@@ -408,13 +407,13 @@ def parse_peripherals(periph_str: str) -> list:
     result = []
     for item in periph_str.split(","):
         item = item.strip()
+        if not item:
+            continue  # 跳过 ",," / 尾部逗号产生的空项，避免外设计数虚高
         if ":" in item:
-            parts = item.split(":")
-            ptype = parts[0].strip().upper()
-            pin = parts[1].strip() if len(parts) > 1 else ""
-            result.append((ptype, pin))
+            ptype, pin = item.split(":", 1)  # 只切第一个冒号，引脚名含 ":" 也不丢
+            result.append((ptype.strip().upper(), pin.strip()))
         else:
-            result.append((item.strip().upper(), ""))
+            result.append((item.upper(), ""))
     return result
 
 def draw_peripheral(svg, ptype, pin, x, y, lang="zh"):
@@ -760,6 +759,7 @@ def generate_wiring_diagram(mcu_model: str, peripherals_str: str = "",
     # 写文件
     if output_path:
         try:
+            Path(output_path).parent.mkdir(parents=True, exist_ok=True)  # -o 指定多级新目录时不再失败
             Path(output_path).write_text(svg, encoding="utf-8")
         except OSError as e:
             print(f"[!] 写入失败 {output_path}: {e}")
@@ -880,6 +880,7 @@ def generate_component_guide(lang="zh", output_path=None):
     
     if output_path:
         try:
+            Path(output_path).parent.mkdir(parents=True, exist_ok=True)  # 与 generate_wiring_diagram 一致
             Path(output_path).write_text(svg, encoding="utf-8")
         except OSError as e:
             print(f"[!] 写入失败 {output_path}: {e}")
@@ -1043,8 +1044,8 @@ def main():
         print("    可用型号:", ", ".join(MCU_DB.keys()))
         return
     
-    generate_wiring_diagram(matched_mcu, args.peripherals or "", 
-                           args.debug, args.lang, args.output)
+    generate_wiring_diagram(matched_mcu, args.peripherals or "",
+                            args.debug, args.lang, args.output)
 
 
 if __name__ == "__main__":

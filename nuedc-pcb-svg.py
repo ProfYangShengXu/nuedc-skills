@@ -142,8 +142,8 @@ def gen_buck_schematic(vin, vout, iout, fsw, output_path):
     svg += gnd_sym(80, 180)
     
     # MOSFET + PWM driver
-    svg += ic_box(200, 100, 120, 80, 'IR2104\nDriver', 
-                  pins_left=[('VCC',20),('HIN',40),('LIN',60)], 
+    svg += ic_box(200, 100, 120, 80, 'IR2104\nDriver',
+                  pins_left=[('VCC',20),('HIN',40),('LIN',60)],
                   pins_right=[('HO',20),('VS',40),('LO',60)])
     svg += wire(80, 130, 180, 120)
     svg += dot(80, 130)

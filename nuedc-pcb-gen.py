@@ -30,8 +30,8 @@ import math
 # dB 换算常数: dB = 20 * log10(ratio)
 DB_SCALE = 20
 
-# fsw 后缀展开表: 命令行 "500k" -> 500000
-FSW_SUFFIX = {'k': '000', 'm': '000000'}
+# fsw 后缀 -> 倍率（用数值乘法，避免 '0.5k' 被字符串替换成 '0.5000' 后截断成 0）
+FSW_SUFFIX = {'k': 1000, 'm': 1000000}
 
 # 电感电流纹波系数 (ΔIL / Iout) 与选型余量、输出电容纹波上限
 RIPPLE_RATIO = 0.3    # 30% 纹波
@@ -159,10 +159,15 @@ def main():
         if a == "--vout": vout = _num(arg, vout, "--vout")
         if a == "--iout": iout = _num(arg, iout, "--iout")
         if a == "--fsw":
-            v = arg.lower()
-            for suffix, zeros in FSW_SUFFIX.items():
-                v = v.replace(suffix, zeros)
-            fsw = int(_num(v, fsw, "--fsw"))
+            v = arg.strip().lower()
+            mult = 1
+            # 后缀链式叠加: "1m" -> x1e6；"1km" 之类的怪写法也能顺序累乘
+            for suffix in sorted(FSW_SUFFIX, key=len, reverse=True):
+                if v.endswith(suffix):
+                    mult *= FSW_SUFFIX[suffix]
+                    v = v[: -len(suffix)]
+                    break
+            fsw = int(_num(v, fsw, "--fsw") * mult)
     if cmd == "buck":
         if vin <= 0 or vout <= 0 or iout <= 0 or fsw <= 0:
             print("[!] 参数必须为正数 (--vin/--vout/--iout/--fsw)")

@@ -19,14 +19,22 @@ from pathlib import Path
 OUT = Path("wiring-diagrams")
 
 # 布局图几何常量 (SVG 用户单位 px)
-CANVAS_W, CANVAS_H = 560, 480   # 画布尺寸
+CANVAS_W, CANVAS_H = 560, 528   # 画布尺寸（高度需容纳 y=470..514 的 4 行 guide 文字）
 ORIGIN_X, ORIGIN_Y = 30, 50     # 板框左上角
+GUIDE_Y = ORIGIN_Y + 420        # guide 文本首行基线（原硬编码 470）
 BODY_W, BODY_H = 30, 20         # 元件本体宽 / 高
 BOARD_W, BOARD_H = 500, 400     # 板框绘制尺寸（与 CANVAS_W/H 独立）
 
 # 元件配色轮转表
 PART_COLORS = ["#e53935", "#1565c0", "#2e7d32", "#f57f17", "#7b1fa2",
                "#00897b", "#c62828", "#283593", "#558b2f", "#e65100"]
+
+# 布局图底部的布线指导文字（逐行间距 14px）
+GUIDE_TIPS = [
+    "Power loop: thick traces, keep short",
+    "Keep inductor away from control IC",
+    "Decoupling caps within 5mm of IC",
+]
 
 FP = {
     "STM32F103C8T6":"Package_QFP:LQFP-48_7x7mm_P0.5mm",
@@ -64,7 +72,6 @@ PLACEMENTS = {
 def gen_layout_svg(topo, out_path):
     p = PLACEMENTS[topo]
     BW, BH = BOARD_W, BOARD_H
-    cols = PART_COLORS
     svg = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {CANVAS_W} {CANVAS_H}">']
     svg.append(f'<text x="280" y="20" text-anchor="middle" font-size="16" font-weight="bold">{p["topo"]}</text>')
     svg.append(f'<text x="280" y="38" text-anchor="middle" font-size="11" fill="#666">Board: {p["board"]}</text>')
@@ -74,7 +81,7 @@ def gen_layout_svg(topo, out_path):
     for i, (ref, part, nx, ny, rot) in enumerate(p["parts"]):
         cx = ORIGIN_X + int(nx * BW)
         cy = ORIGIN_Y + int(ny * BH)
-        c = cols[i % len(cols)]
+        c = PART_COLORS[i % len(PART_COLORS)]
         svg.append(
             f'<rect x="{cx - BODY_W // 2}" y="{cy - BODY_H // 2}" width="{BODY_W}" height="{BODY_H}"'
             f' rx="2" fill="{c}33" stroke="{c}" stroke-width="1.5"/>')
@@ -82,10 +89,10 @@ def gen_layout_svg(topo, out_path):
             f'<text x="{cx}" y="{cy+4}" text-anchor="middle" font-size="9"'
             f' font-weight="bold" fill="{c}">{ref}</text>')
         svg.append(f'<text x="{cx}" y="{cy+14}" text-anchor="middle" font-size="7" fill="#666">{part}</text>')
-    svg.append('<text x="30" y="470" font-size="10" font-weight="bold">Guide:</text>')
-    svg.append('<text x="30" y="486" font-size="9" fill="#555">Power loop: thick traces, keep short</text>')
-    svg.append('<text x="30" y="500" font-size="9" fill="#555">Keep inductor away from control IC</text>')
-    svg.append('<text x="30" y="514" font-size="9" fill="#555">Decoupling caps within 5mm of IC</text>')
+    svg.append(f'<text x="{ORIGIN_X}" y="{GUIDE_Y}" font-size="10" font-weight="bold">Guide:</text>')
+    for i, tip in enumerate(GUIDE_TIPS):
+        svg.append(f'<text x="{ORIGIN_X}" y="{GUIDE_Y + 16 + i * 14}" font-size="9"'
+                   f' fill="#555">{tip}</text>')
     svg.append('</svg>')
     try:
         with open(out_path, 'w', encoding='utf-8') as f:
@@ -97,7 +104,13 @@ def gen_layout_svg(topo, out_path):
 
 def gen_kicad_script(topo, out_path):
     p = PLACEMENTS[topo]
-    w, h = (v.strip() for v in p["board"].split(" x ", 1))  # 保留完整浮点，避免 "50.5" 被切成 "50."
+    # 板框字段形如 "50 x 40"；格式不符时给出明确提示而非抛 ValueError 回溯
+    try:
+        w, h = (v.strip() for v in p["board"].split(" x ", 1))  # 保留完整浮点，避免 "50.5" 被切成 "50."
+        float(w), float(h)
+    except ValueError:
+        print(f"[!] 拓扑 {topo} 的板框字段 {p['board']!r} 格式无效，应为 '宽 x 高'（如 '50 x 40'）")
+        return None
     lines = [
         '#!/usr/bin/env python3',
         '"""KiCad auto-placement for ' + p["topo"] + '"""',
